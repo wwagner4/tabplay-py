@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-from tabplay import Files
+from tabplay import Files, Train
 
 
 def scaler():
@@ -69,5 +69,24 @@ def split():
 
     large()
 
+def gbm():
+    from sklearn.ensemble import GradientBoostingRegressor
+    from sklearn.model_selection import train_test_split
 
-split()
+    files = Files()
+    train= Train()
+
+    train_df = files.train_df().head(n=20000)
+
+    x = train_df[train.x_names].values
+    y = train_df[[train.y_name]].values.ravel()
+    x_train, x_test, y_train, y_test = train_test_split(
+        x, y, random_state=0)
+    reg = GradientBoostingRegressor(random_state=0)
+    print("calling fit for gbm")
+    print("fit", reg.fit(x_train, y_train))
+    print("predict", reg.predict(x_test[1:2]))
+    print("score", reg.score(x_test, y_test))
+
+
+gbm()
