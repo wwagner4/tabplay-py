@@ -33,6 +33,9 @@ def main():
     def f_linreg(x: np.ndarray, y: np.ndarray) -> MyModel:
         return train.fit_linreg(x, y)
 
+    def f_gbm(x: np.ndarray, y: np.ndarray) -> MyModel:
+        return train.fit_gbm(x, y)
+
     def f_mean(_: np.ndarray, y: np.ndarray) -> MyModel:
         return train.fit_mean(y)
 
@@ -45,13 +48,15 @@ def main():
     ran.seed(123)
     shuffles = [ran.randint(0, 100000) for _ in range(15)]
 
-    xall = trainall_df[train.x_names].values
-    yall = trainall_df[[train.y_name]].values
-    mse_linreg = [trainit(_shuffle, xall, yall, f_linreg, scaled) for _shuffle in shuffles]
+    x = trainall_df[train.x_names].values
+    y = trainall_df[[train.y_name]].values.ravel()
+    mse_gbm = [trainit(_shuffle, x, y, f_gbm, scaled) for _shuffle in shuffles]
+    print("finished gbm")
+    mse_linreg = [trainit(_shuffle, x, y, f_linreg, scaled) for _shuffle in shuffles]
     print("finished lin reg")
-    mse_mean = [trainit(_shuffle, xall, yall, f_mean, scaled) for _shuffle in shuffles]
+    mse_mean = [trainit(_shuffle, x, y, f_mean, scaled) for _shuffle in shuffles]
     print("finished lin mean")
-    mse_median = [trainit(_shuffle, xall, yall, f_median, scaled) for _shuffle in shuffles]
+    mse_median = [trainit(_shuffle, x, y, f_median, scaled) for _shuffle in shuffles]
     print("finished lin median")
 
 
@@ -60,13 +65,15 @@ def main():
     else:
         nam = f"plt_compare_models_{ls_id}.png"
     fnam = files.workdir / "plots" / nam
-    all_data = [mse_linreg, mse_mean, mse_median]
-    plt.ylim(0.69, 0.74)
+    all_data = [mse_gbm, mse_linreg, mse_mean, mse_median]
+    all_labels = ["gbm", "linreg", "mean", "median"]
+    plt.ylim(0.69, 0.75)
     plt.title("Tabular Playground with submissions")
-    plt.axhline(0.6973, color='r')
+    plt.axhline(0.699, color='r')
+    plt.axhline(0.7013, color='g')
     plt.axhline(0.7278, linestyle='--')
     plt.axhline(0.7349, linestyle='--')
-    plt.boxplot(all_data, labels=["linreg", "mean", "median"])
+    plt.boxplot(all_data, labels=all_labels)
 
     plt.savefig(fnam)
     print(f"Plottet to {fnam.absolute()}")

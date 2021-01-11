@@ -4,6 +4,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.linear_model import LinearRegression
 
 
@@ -53,6 +54,10 @@ class Train:
     @staticmethod
     def fit_linreg(x: np.ndarray, y: np.ndarray):
         return LinearRegression().fit(x, y)
+
+    @staticmethod
+    def fit_gbm(x: np.ndarray, y: np.ndarray):
+        return GradientBoostingRegressor().fit(x, y)
 
     @staticmethod
     def fit_mean(y: np.ndarray) -> MyModel:
