@@ -1,5 +1,6 @@
 import os
 from abc import abstractmethod, ABC
+from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
@@ -13,6 +14,22 @@ class MyModel(ABC):
     @abstractmethod
     def predict(self, x):
         pass
+
+
+@dataclass
+class GradientBoostingConfig:
+    learning_rate: float
+    max_depth: int
+    n_estimators: int
+    subsample: float
+
+    def __init__(self, learning_rate: float = 0.1,
+                 max_depth: int = 3, n_estimators: int = 100,
+                 subsample: float = 1.0):
+        self.learning_rate = learning_rate
+        self.max_depth = max_depth
+        self.n_estimators = n_estimators
+        self.subsample = subsample
 
 
 class Files:
@@ -36,9 +53,9 @@ class Files:
 
 
 class Train:
-
     x_names = ['cont1', 'cont2', 'cont3', 'cont4', 'cont5', 'cont6', 'cont7',
-               'cont8', 'cont9', 'cont10', 'cont11', 'cont12', 'cont13', 'cont14']
+               'cont8', 'cont9', 'cont10', 'cont11', 'cont12', 'cont13',
+               'cont14']
     y_name = 'target'
 
     @staticmethod
@@ -56,8 +73,13 @@ class Train:
         return LinearRegression().fit(x, y)
 
     @staticmethod
-    def fit_gbm(x: np.ndarray, y: np.ndarray):
-        return GradientBoostingRegressor().fit(x, y)
+    def fit_gbm(x: np.ndarray, y: np.ndarray, config: GradientBoostingConfig):
+        regr = GradientBoostingRegressor(
+            learning_rate=config.learning_rate,
+            max_depth=config.max_depth,
+            n_estimators=config.n_estimators,
+            subsample=config.subsample)
+        return regr.fit(x, y)
 
     @staticmethod
     def fit_mean(y: np.ndarray) -> MyModel:

@@ -1,52 +1,127 @@
 import random as ran
+from dataclasses import dataclass
+from pprint import pprint
+from typing import List
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 from localsubm import trainit
-from tabplay import Files, Train, MyModel
+from tabplay import Files, Train, MyModel, GradientBoostingConfig
 
 
-def main():
-    files = Files()
-    train = Train()
-    scaled = True
-    ls_id = '05'
+@dataclass
+class GbmRunCfg:
+    rid: str
+    seed: int
+    scaled: bool
+    cfg: GradientBoostingConfig
 
-    def f_gbm(x: np.ndarray, y: np.ndarray) -> MyModel:
-        return train.fit_gbm(x, y)
+
+@dataclass
+class GbmCv:
+    run_id: str
+    title: str
+    cnt: int
+    runCfgs: List[GbmRunCfg]
+
+
+cvs = {
+    "01": GbmCv(
+        run_id="01",
+        title="GBM Cross Validation",
+        cnt=15,
+        runCfgs=[
+            GbmRunCfg(
+                rid="3",
+                seed=3847,
+                scaled=True,
+                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=3)
+            ),
+            GbmRunCfg(
+                rid="5",
+                seed=9237,
+                scaled=True,
+                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=5)
+            ),
+            GbmRunCfg(
+                rid="9",
+                seed=92847,
+                scaled=True,
+                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=9)
+            ),
+        ]
+    ),
+    "02": GbmCv(
+        run_id="02",
+        title="GBM CV on max depth > 9",
+        cnt=15,
+        runCfgs=[
+            GbmRunCfg(
+                rid="10",
+                seed=383347,
+                scaled=True,
+                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=10)
+            ),
+            GbmRunCfg(
+                rid="12",
+                seed=924537,
+                scaled=True,
+                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=12)
+            ),
+            GbmRunCfg(
+                rid="15",
+                seed=9265847,
+                scaled=True,
+                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=15)
+            ),
+        ]
+    ),
+}
+
+files = Files()
+train = Train()
+
+
+def main(cv: GbmCv):
+    print("cv on gbm")
+    pprint(cv)
 
     trainall_df = files.train_df()
-    print("traindf.shape", trainall_df.shape)
+    print("read data", trainall_df.shape)
 
-    ran.seed(123)
-    shuffles = [ran.randint(0, 100000) for _ in range(15)]
+    x_all = trainall_df[train.x_names].values
+    y_all = trainall_df[[train.y_name]].values.ravel()
 
-    x = trainall_df[train.x_names].values
-    y = trainall_df[[train.y_name]].values.ravel()
-    mse_gbm = [trainit(_shuffle, x, y, f_gbm, scaled) for _shuffle in shuffles]
-    print("finished gbm")
+    def fitit(rc: GbmRunCfg) -> List[float]:
+        print("fitit", rc.rid)
 
-    if scaled:
-        nam = f"gbm_cv_{ls_id}_scaled.png"
-        tit = "GBM Cross Validation scaled"
-    else:
-        nam = f"gbm_cv_{ls_id}.png"
-        tit = "GBM Cross Validation"
-    fnam = files.workdir / "plots" / nam
-    all_data = [mse_gbm]
-    all_labels = ["gbm"]
+        def f_gbm(x: np.ndarray, y: np.ndarray) -> MyModel:
+            return train.fit_gbm(x, y, rc.cfg)
+
+        ran.seed(rc.seed)
+        seeds = [ran.randint(0, 100000) for _ in range(cv.cnt)]
+
+        return [trainit(s, x_all, y_all, f_gbm, rc.scaled) for s in seeds]
+
+    results = [(cfg.rid, fitit(cfg)) for cfg in cv.runCfgs]
+
+    nam = f"gbm_cv_{cv.run_id}_scaled.png"
+    plot_dir = files.workdir / "plots"
+    if not plot_dir.exists():
+        plot_dir.mkdir()
+    fnam = plot_dir / nam
+    all_data = [r[1] for r in results]
+    all_labels = [r[0] for r in results]
     plt.ylim(0.69, 0.75)
-    plt.title(tit)
+    plt.title(cv.title)
     plt.axhline(0.699, color='r')
     plt.axhline(0.7013, color='g')
-    plt.axhline(0.7278, linestyle='--')
-    plt.axhline(0.7349, linestyle='--')
     plt.boxplot(all_data, labels=all_labels)
 
     plt.savefig(fnam)
-    print(f"Plottet to {fnam.absolute()}")
+    print(f"Plotted to {fnam.absolute()}")
 
 
 if __name__ == "__main__":
-    main()
+    main(cvs["02"])
