@@ -55,7 +55,7 @@ cvs = {
     ),
     "02": GbmCv(
         run_id="02",
-        title="GBM CV on max depth > 9",
+        title="GBM CV on max depth, learning_rate=0.1",
         cnt=15,
         runCfgs=[
             GbmRunCfg(
