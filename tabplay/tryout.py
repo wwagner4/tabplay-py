@@ -1,3 +1,4 @@
+import argparse
 from pprint import pprint
 
 import numpy as np
@@ -52,7 +53,9 @@ def split():
         y = np.array(range(5)).reshape(5, 1)
         print(x.shape, type(x))
         print(y.shape, type(y))
-        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=42)
+        x_train, x_test, y_train, y_test = train_test_split(x, y,
+                                                            test_size=0.33,
+                                                            random_state=42)
         print("- train")
         print(x_train)
         print(y_train)
@@ -69,12 +72,13 @@ def split():
 
     large()
 
+
 def gbm():
     from sklearn.ensemble import GradientBoostingRegressor
     from sklearn.model_selection import train_test_split
 
     files = Files()
-    train= Train()
+    train = Train()
 
     train_df = files.train_df().head(n=20000)
 
@@ -89,4 +93,20 @@ def gbm():
     print("score", reg.score(x_test, y_test))
 
 
-gbm()
+def argparse_tryout():
+    cdict = {
+        "01": "something 01",
+        "02": "something 02"
+    }
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("id", choices=cdict.keys(), help="The id to run")
+    myargs: argparse.Namespace = parser.parse_args()
+    print("myargs", myargs)
+    print("myargs id", myargs.id)
+    print("myargs id", type(myargs.id))
+    print("dict val", cdict[myargs.id])
+
+
+if __name__ == '__main__':
+    argparse_tryout()
