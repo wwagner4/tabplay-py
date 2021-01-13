@@ -1,3 +1,4 @@
+import argparse
 import random as ran
 from dataclasses import dataclass
 from pprint import pprint
@@ -138,7 +139,7 @@ files = Files()
 train = Train()
 
 
-def main(cv: GbmCv):
+def run(cv: GbmCv):
     print("cv on gbm")
     pprint(cv)
 
@@ -178,5 +179,12 @@ def main(cv: GbmCv):
     print(f"Plotted to {fnam.absolute()}")
 
 
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("id", choices=cvs.keys(), help="The id to run")
+    myargs: argparse.Namespace = parser.parse_args()
+    run(cvs[myargs.id])
+
+
 if __name__ == "__main__":
-    main(cvs["02"])
+    main()
