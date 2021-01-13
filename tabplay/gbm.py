@@ -58,6 +58,24 @@ cvs = {
         cnt=15,
         runCfgs=[
             GbmRunCfg(
+                rid="5",
+                seed=9237,
+                scaled=True,
+                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=5)
+            ),
+            GbmRunCfg(
+                rid="8",
+                seed=9237,
+                scaled=True,
+                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=8)
+            ),
+            GbmRunCfg(
+                rid="9",
+                seed=92847,
+                scaled=True,
+                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=9)
+            ),
+            GbmRunCfg(
                 rid="10",
                 seed=383347,
                 scaled=True,
@@ -74,6 +92,43 @@ cvs = {
                 seed=9265847,
                 scaled=True,
                 cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=15)
+            ),
+        ]
+    ),
+    "03": GbmCv(
+        run_id="03",
+        title="GBM CV on learning rate, max depth = 9",
+        cnt=15,
+        runCfgs=[
+            GbmRunCfg(
+                rid="0.05",
+                seed=383347,
+                scaled=True,
+                cfg=GradientBoostingConfig(learning_rate=0.05, max_depth=9)
+            ),
+            GbmRunCfg(
+                rid="0.1",
+                seed=383347,
+                scaled=True,
+                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=9)
+            ),
+            GbmRunCfg(
+                rid="0.15",
+                seed=383347,
+                scaled=True,
+                cfg=GradientBoostingConfig(learning_rate=0.15, max_depth=9)
+            ),
+            GbmRunCfg(
+                rid="0.2",
+                seed=924537,
+                scaled=True,
+                cfg=GradientBoostingConfig(learning_rate=0.2, max_depth=9)
+            ),
+            GbmRunCfg(
+                rid="0.15",
+                seed=9265847,
+                scaled=True,
+                cfg=GradientBoostingConfig(learning_rate=0.25, max_depth=9)
             ),
         ]
     ),
