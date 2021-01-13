@@ -59,6 +59,37 @@ cvs = {
             ),
         ]
     ),
+    "02": RfCv(
+        run_id="02",
+        title="Random Forest Cross Validation on number of estimators, NOT scaled",
+        cnt=15,
+        runCfgs=[
+            RfRunCfg(
+                rid="50",
+                seed=3847,
+                scaled=False,
+                cfg=RandomForestConfig(n_estimators=50)
+            ),
+            RfRunCfg(
+                rid="100",
+                seed=9237,
+                scaled=False,
+                cfg=RandomForestConfig(n_estimators=100)
+            ),
+            RfRunCfg(
+                rid="200",
+                seed=92222847,
+                scaled=False,
+                cfg=RandomForestConfig(n_estimators=200)
+            ),
+            RfRunCfg(
+                rid="400",
+                seed=92452847,
+                scaled=False,
+                cfg=RandomForestConfig(n_estimators=400)
+            ),
+        ]
+    ),
 }
 
 files = Files()
