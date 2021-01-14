@@ -46,11 +46,16 @@ def doit(conf: Conf):
         xv = remvals(conf.x_names, [ni])
         x = train_df[xv].values
         y = train_df[[train.y_name]].values
-        return conf.x_names[ni], [trainit(i + conf.seed + ni, x, y, f_linreg, conf.scaled) for i in range(cnt)]
+        a = conf.x_names[ni]
+        b = [trainit(i + conf.seed + ni, x, y, f_linreg, conf.scaled) for i in
+             range(cnt)]
+        return a, b
 
     x_all = train_df[conf.x_names].values
     y_all = train_df[[train.y_name]].values
-    tuple_all = "all", [trainit(conf.seed + i, x_all, y_all, f_linreg, conf.scaled) for i in range(cnt)]
+    tuple_all = "all", [
+        trainit(conf.seed + i, x_all, y_all, f_linreg, conf.scaled) for i in
+        range(cnt)]
     median_all = statistics.median(tuple_all[1])
 
     res = [tr(ni) for ni in range(len(conf.x_names))]
@@ -66,10 +71,10 @@ def doit(conf: Conf):
 
     plt.clf()
     if conf.scaled:
-        nam =  f"plt_rm_stepwise_{conf.id}_scaled.png"
+        nam = f"plt_rm_stepwise_{conf.id}_scaled.png"
         tit = f"Tabular Playground. Stepwise removal {conf.id} scaled"
     else:
-        nam =  f"plt_rm_stepwise_{conf.id}.png"
+        nam = f"plt_rm_stepwise_{conf.id}.png"
         tit = f"Tabular Playground. Stepwise removal {conf.id}"
     fnam = files.workdir / "plots" / nam
     plt.title(tit)
@@ -84,7 +89,9 @@ def doit(conf: Conf):
     print(f"Plotted to {fnam.absolute()}")
 
     if len(conf.x_names) > 2:
-        next_conf = Conf(id=conf.id + 1, scaled=conf.scaled, seed=conf.seed + 131, x_names=remvals(conf.x_names, [min_idx]))
+        next_conf = Conf(id=conf.id + 1, scaled=conf.scaled,
+                         seed=conf.seed + 131,
+                         x_names=remvals(conf.x_names, [min_idx]))
         doit(next_conf)
 
 

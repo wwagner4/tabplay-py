@@ -32,19 +32,6 @@ class GradientBoostingConfig:
         self.subsample = subsample
 
 
-@dataclass
-class RandomForestConfig:
-    max_depth: int
-    n_estimators: int
-    random_state: int
-
-    def __init__(self, max_depth: int = None, n_estimators: int = 100,
-                 random_state: int = None):
-        self.max_depth = max_depth
-        self.n_estimators = n_estimators
-        self.random_state = random_state
-
-
 class Files:
     workdir: Path
     datadir: Path
@@ -95,12 +82,8 @@ class Train:
         return regr.fit(x, y)
 
     @staticmethod
-    def fit_random_forest(x: np.ndarray, y: np.ndarray,
-                          config: RandomForestConfig):
-        regr = RandomForestRegressor(
-            max_depth=config.max_depth,
-            n_estimators=config.n_estimators,
-            random_state=config.random_state)
+    def fit_random_forest(x: np.ndarray, y: np.ndarray, config: dict):
+        regr = RandomForestRegressor(**config)
         return regr.fit(x, y)
 
     @staticmethod

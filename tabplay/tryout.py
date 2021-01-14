@@ -1,6 +1,7 @@
 import argparse
 from pprint import pprint
 
+import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -70,6 +71,7 @@ def split():
         a, b = train_test_split(t, test_size=0.3)
         print("a,b", type(a), type(b), a.shape, b.shape)
 
+    small()
     large()
 
 
@@ -108,5 +110,33 @@ def argparse_tryout():
     print("dict val", cdict[myargs.id])
 
 
+def plot_tryout():
+    files = Files()
+    results = [
+        ('A', 0.71),
+        ('B', 0.70),
+        ('B1', 0.743),
+        ('C', 0.733),
+        ('default', 0.731),
+        ('all', 0.723),
+    ]
+
+    nam = f"tryout_plot.png"
+    plot_dir = files.workdir / "plots"
+    if not plot_dir.exists():
+        plot_dir.mkdir()
+    fnam = plot_dir / nam
+    all_data = [r[1] for r in results]
+    all_labels = [r[0] for r in results]
+    plt.ylim(0.69, 0.75)
+    plt.title("Tryout plot")
+    plt.axhline(0.699, color='r')
+    plt.axhline(0.7013, color='g')
+    plt.plot(all_labels, all_data)
+
+    plt.savefig(fnam)
+    print(f"Plotted to {fnam.absolute()}")
+
+
 if __name__ == '__main__':
-    argparse_tryout()
+    plot_tryout()

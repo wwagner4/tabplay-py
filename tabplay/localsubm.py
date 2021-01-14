@@ -8,8 +8,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-from tabplay import Files, Train, MyModel, GradientBoostingConfig, \
-    RandomForestConfig
+from tabplay import Files, Train, MyModel, GradientBoostingConfig
 
 
 def trainit(seed: int, x: np.ndarray, y: np.ndarray,
@@ -38,8 +37,7 @@ def main():
         return train.fit_gbm(x, y, c)
 
     def f_rf(x: np.ndarray, y: np.ndarray) -> MyModel:
-        c = RandomForestConfig()
-        return train.fit_random_forest(x, y, c)
+        return train.fit_random_forest(x, y, {})
 
     def f_linreg(x: np.ndarray, y: np.ndarray) -> MyModel:
         return train.fit_linreg(x, y)
