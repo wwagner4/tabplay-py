@@ -1,6 +1,6 @@
 import argparse
 import random
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from pprint import pprint
 from typing import List
 
@@ -12,48 +12,48 @@ from tabplay import Files, Train, MyModel
 
 
 @dataclass
-class RfRunCfg:
+class RunCfg:
     run_id: str
     cfg: dict
     scaled: bool = True
 
 
 @dataclass
-class RfDataSetCfg:
+class DataSetCfg:
     ds_id: str
-    run_cfgs: List[RfRunCfg]
+    run_cfgs: List[RunCfg]
 
 
 @dataclass
-class RfCv:
+class CvCfg:
     cv_id: str
     title: str
-    ds_cfgs: List[RfDataSetCfg]
+    ds_cfgs: List[DataSetCfg]
     seed: int = 1827391
 
 
 cvs = {
-    '01': RfCv(
+    '01': CvCfg(
         cv_id='random_forest_01',
         title='Random Forest Cross Validation on number of estimators',
         seed=238947,
         ds_cfgs=[
-            RfDataSetCfg(
+            DataSetCfg(
                 ds_id='n_estimators',
                 run_cfgs=[
-                    RfRunCfg(
+                    RunCfg(
                         run_id="50",
                         cfg={'n_estimators': 50}
                     ),
-                    RfRunCfg(
+                    RunCfg(
                         run_id="100",
                         cfg={'n_estimators': 100}
                     ),
-                    RfRunCfg(
+                    RunCfg(
                         run_id="200",
                         cfg={'n_estimators': 200}
                     ),
-                    RfRunCfg(
+                    RunCfg(
                         run_id="400",
                         cfg={'n_estimators': 400}
                     ),
@@ -61,30 +61,30 @@ cvs = {
             ),
         ]
     ),
-    '02': RfCv(
+    '02': CvCfg(
         cv_id='random_forest_02',
         title='Random Forest CV on number of estimators, NOT scaled',
         seed=2389,
         ds_cfgs=[
-            RfDataSetCfg(
+            DataSetCfg(
                 ds_id='n_estimators',
                 run_cfgs=[
-                    RfRunCfg(
+                    RunCfg(
                         run_id="50",
                         scaled=False,
                         cfg={'n_estimators': 50}
                     ),
-                    RfRunCfg(
+                    RunCfg(
                         run_id="100",
                         scaled=False,
                         cfg={'n_estimators': 100}
                     ),
-                    RfRunCfg(
+                    RunCfg(
                         run_id="200",
                         scaled=False,
                         cfg={'n_estimators': 200}
                     ),
-                    RfRunCfg(
+                    RunCfg(
                         run_id="400",
                         scaled=False,
                         cfg={'n_estimators': 400}
@@ -93,48 +93,48 @@ cvs = {
             ),
         ]
     ),
-    '03': RfCv(
+    '03': CvCfg(
         cv_id='random_forest_03',
         title='Random Forest CV on max_depth, n_estimators',
         seed=2822347,
         ds_cfgs=[
-            RfDataSetCfg(
+            DataSetCfg(
                 ds_id='n_estimators 200',
                 run_cfgs=[
-                    RfRunCfg(
+                    RunCfg(
                         run_id="5",
                         cfg={'n_estimators': 200, 'max_depth': 5}
                     ),
-                    RfRunCfg(
+                    RunCfg(
                         run_id="15",
                         cfg={'n_estimators': 200, 'max_depth': 15}
                     ),
-                    RfRunCfg(
+                    RunCfg(
                         run_id="25",
                         cfg={'n_estimators': 200, 'max_depth': 25}
                     ),
-                    RfRunCfg(
+                    RunCfg(
                         run_id="auto",
                         cfg={'n_estimators': 200, 'max_depth': None}
                     ),
                 ]
             ),
-            RfDataSetCfg(
+            DataSetCfg(
                 ds_id='n_estimators 100',
                 run_cfgs=[
-                    RfRunCfg(
+                    RunCfg(
                         run_id="5",
                         cfg={'n_estimators': 100, 'max_depth': 5}
                     ),
-                    RfRunCfg(
+                    RunCfg(
                         run_id="15",
                         cfg={'n_estimators': 100, 'max_depth': 15}
                     ),
-                    RfRunCfg(
+                    RunCfg(
                         run_id="25",
                         cfg={'n_estimators': 100, 'max_depth': 25}
                     ),
-                    RfRunCfg(
+                    RunCfg(
                         run_id="auto",
                         cfg={'n_estimators': 100, 'max_depth': None}
                     ),
@@ -148,9 +148,9 @@ files = Files()
 train = Train()
 
 
-def run(cv: RfCv):
-    print("cv on rf")
-    pprint(cv)
+def run(cv: CvCfg):
+    print("cv", cv.cv_id)
+    pprint(asdict(cv), width=200)
     random.seed(cv.seed)
 
     trainall_df = files.train_df().head(10000)
@@ -159,7 +159,7 @@ def run(cv: RfCv):
     x_all = trainall_df[train.x_names].values
     y_all = trainall_df[[train.y_name]].values.ravel()
 
-    def fitit(rc: RfRunCfg) -> float:
+    def fitit(rc: RunCfg) -> float:
         print("RF fitit", rc.run_id)
 
         def f_rf(x: np.ndarray, y: np.ndarray) -> MyModel:
