@@ -1,36 +1,13 @@
 import argparse
 import random
-from dataclasses import dataclass, asdict
+from dataclasses import asdict
 from pprint import pprint
-from typing import List
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 from localsubm import trainit
-from tabplay import Files, Train, MyModel
-
-
-@dataclass
-class RunCfg:
-    run_id: str
-    cfg: dict
-    scaled: bool = True
-
-
-@dataclass
-class DataSetCfg:
-    ds_id: str
-    run_cfgs: List[RunCfg]
-
-
-@dataclass
-class CvCfg:
-    cv_id: str
-    title: str
-    ds_cfgs: List[DataSetCfg]
-    seed: int = 1827391
-
+from tabplay import Files, Train, MyModel, CvCfg, DataSetCfg, RunCfg
 
 cvs = {
     '01': CvCfg(

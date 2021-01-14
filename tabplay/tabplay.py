@@ -2,11 +2,33 @@ import os
 from abc import abstractmethod, ABC
 from dataclasses import dataclass
 from pathlib import Path
+from typing import List
 
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.linear_model import LinearRegression
+
+
+@dataclass
+class RunCfg:
+    run_id: str
+    cfg: dict
+    scaled: bool = True
+
+
+@dataclass
+class DataSetCfg:
+    ds_id: str
+    run_cfgs: List[RunCfg]
+
+
+@dataclass
+class CvCfg:
+    cv_id: str
+    title: str
+    ds_cfgs: List[DataSetCfg]
+    seed: int = 1827391
 
 
 class MyModel(ABC):
