@@ -133,6 +133,25 @@ cvs = {
             ),
         ]
     ),
+    "04": GbmCv(
+        run_id="04",
+        title="GBM CV on scaled / not scaled",
+        cnt=15,
+        runCfgs=[
+            GbmRunCfg(
+                rid="scaled",
+                seed=383347,
+                scaled=True,
+                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=9)
+            ),
+            GbmRunCfg(
+                rid="NOT scaled",
+                seed=383347,
+                scaled=False,
+                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=9)
+            ),
+        ]
+    ),
 }
 
 files = Files()
