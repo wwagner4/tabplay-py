@@ -1,8 +1,9 @@
+import argparse
 import os
 from abc import abstractmethod, ABC
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
+from typing import List, Any
 
 import numpy as np
 import pandas as pd
@@ -81,21 +82,20 @@ class Train:
     y_name = 'target'
 
     @staticmethod
-    def create_submission(files, predictable, subm_id, test_df, x):
+    def create_submission(subm_file: Path, predictable: Any, test_df, x):
         yp = predictable.predict(x)
         id_df = test_df[['id']]
         target_df = pd.DataFrame(yp, columns=['target'])
         subm_df = id_df.join(target_df)
-        subm_file = files.datadir / f"subm_{subm_id}.csv"
         subm_df.to_csv(subm_file, index=False)
-        print("wrote to", subm_file.absolute())
 
     @staticmethod
-    def fit_linreg(x: np.ndarray, y: np.ndarray):
+    def fit_linreg(x: np.ndarray, y: np.ndarray) -> MyModel:
         return LinearRegression().fit(x, y)
 
     @staticmethod
-    def fit_gbm(x: np.ndarray, y: np.ndarray, config: GradientBoostingConfig):
+    def fit_gbm(x: np.ndarray, y: np.ndarray,
+                config: GradientBoostingConfig) -> Any:
         regr = GradientBoostingRegressor(
             learning_rate=config.learning_rate,
             max_depth=config.max_depth,
@@ -104,7 +104,7 @@ class Train:
         return regr.fit(x, y)
 
     @staticmethod
-    def fit_random_forest(x: np.ndarray, y: np.ndarray, config: dict):
+    def fit_random_forest(x: np.ndarray, y: np.ndarray, config: dict) -> Any:
         regr = RandomForestRegressor(**config)
         return regr.fit(x, y)
 
@@ -129,3 +129,13 @@ class Train:
                 return np.full((x.shape[0], 1), _mean)
 
         return M()
+
+
+class Util:
+
+    @staticmethod
+    def parse_config_by_id(configs: dict) -> Any:
+        parser = argparse.ArgumentParser()
+        parser.add_argument("id", choices=configs.keys(), help="The id to run")
+        myargs: argparse.Namespace = parser.parse_args()
+        return configs[myargs.id]
