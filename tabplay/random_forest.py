@@ -130,7 +130,7 @@ def run(cv: CvCfg):
     pprint(asdict(cv), width=200)
     random.seed(cv.seed)
 
-    trainall_df = files.train_df().head(10000)
+    trainall_df = files.train_df()
     print("read data", trainall_df.shape)
 
     x_all = trainall_df[train.x_names].values
