@@ -8,7 +8,7 @@ docker run \
 -v /home/itsv.org.sv-services.at/31100428/work1/kaggle/tabplay:/opt/work \
 --rm \
 tabplay \
-python /opt/project/tabplay/tryout.py 01
+python -u /opt/project/tabplay/tryout.py 01
 ```
 
 ```
@@ -19,7 +19,7 @@ docker run \
 -v /home/itsv.org.sv-services.at/31100428/work1/kaggle/tabplay:/opt/work \
 --rm \
 tabplay \
-python /opt/project/tabplay/localsubm.py
+python -u /opt/project/tabplay/localsubm.py
 
 # gradient boost
 docker run \
@@ -28,7 +28,7 @@ docker run \
 -v /home/itsv.org.sv-services.at/31100428/work1/kaggle/tabplay:/opt/work \
 --rm \
 tabplay \
-python /opt/project/tabplay/gbm.py 02
+python -u /opt/project/tabplay/gbm.py 02
 
 # random forest
 docker run \
@@ -37,5 +37,5 @@ docker run \
 -v /home/itsv.org.sv-services.at/31100428/work1/kaggle/tabplay:/opt/work \
 --rm \
 tabplay \
-python /opt/project/tabplay/random_forest.py 01
+python -u /opt/project/tabplay/random_forest.py 01
 ```
