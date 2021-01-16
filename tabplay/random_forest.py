@@ -158,9 +158,7 @@ def run(cv: CvCfg):
     plt.axhline(0.699, color='r')
     plt.axhline(0.7013, color='g')
 
-    plot_dir = files.workdir / "plots"
-    if not plot_dir.exists():
-        plot_dir.mkdir()
+    plot_dir = files.plotdir
     nam = f"cv_{cv.cv_id}.png"
     fnam = plot_dir / nam
     plt.savefig(fnam)

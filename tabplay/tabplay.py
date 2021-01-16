@@ -65,6 +65,7 @@ class Files:
         workdir_str = os.getenv("TABPLAY_WORKDIR", default="/opt/work")
         self.workdir = Path(workdir_str)
         self.datadir = self.workdir / "data"
+        self.plotdir = self.workdir / "plots"
         self.train_file = self.datadir / "train.csv"
         self.test_file = self.datadir / "test.csv"
 
@@ -73,6 +74,7 @@ class Files:
 
     def test_df(self) -> pd.DataFrame:
         return pd.read_csv(self.train_file)
+
 
 
 class Train:
