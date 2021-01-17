@@ -5,7 +5,6 @@ from itertools import groupby
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from matplotlib.pyplot import figure
 from sklearn.preprocessing import MinMaxScaler
 
 from tabplay import Files
@@ -18,18 +17,14 @@ class RegConf:
 
 
 """
-cmaps: ['PiYG', 'PRGn', 'BrBG', 'PuOr', 'RdGy', 'RdBu',
-        'RdYlBu', 'RdYlGn', 'Spectral', 'coolwarm', 'bwr', 'seismic']
 Index(['id', 'cont1', 'cont2', 'cont3', 'cont4', 'cont5', 'cont6', 'cont7',
        'cont8', 'cont9', 'cont10', 'cont11', 'cont12', 'cont13', 'cont14',
        'target'],
 """
 files = Files()
-plot_id = '04'
+plot_id = '07'
 n = 50
 cols = 4
-cmap = 'coolwarm'
-figure(figsize=(20, 17))
 var_ids = range(1, 14)
 
 reg_confs = [RegConf(nam_x=f'cont{i}', nam_y='target') for i in var_ids]
@@ -66,8 +61,13 @@ def plot1(reg_conf: RegConf, plot_cnt: int, plot_idx: int, df_scaled: pd.DataFra
 
     rs = rows(plot_cnt)
     print("subplot", rs, cols, plot_idx)
+    """
+    cmaps: ['PiYG', 'PRGn', 'BrBG', 'PuOr', 'RdGy', 'RdBu',
+            'RdYlBu', 'RdYlGn', 'Spectral', 'coolwarm', 'bwr', 'seismic']
+    """
     ax = plt.subplot(rs, cols, plot_idx)
-    ax.contourf(x, y, z, cmap=cmap, antialiased=True, levels=15)
+    # ax.contourf(x, y, z, cmap='Spectral', antialiased=True, levels=30)
+    ax.contour(x, y, z, cmap='Spectral', antialiased=True, levels=30)
     ax.set_xlabel(reg_conf.nam_x)
     ax.set_ylabel(reg_conf.nam_y)
 
@@ -80,9 +80,10 @@ def main():
     df_scaled = pd.DataFrame(array_transformed, columns=df.keys()).applymap(fs)
 
     cfg_cnt = len(reg_confs)
+    plt.figure(figsize=(20, 17))
     for idx, reg_conf in zip(range(1, cfg_cnt + 1), reg_confs):
         plot1(reg_conf, cfg_cnt, idx, df_scaled)
-    plt.suptitle('predictors against target', fontsize=16)
+    plt.suptitle('predictors against target', fontsize=36)
     fnam = files.plotdir / f"regplot_{plot_id}.png"
     plt.savefig(fnam)
     print(f"Plotted to {fnam.absolute()}")
