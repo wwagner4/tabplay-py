@@ -181,10 +181,8 @@ def run(cv: GbmCv):
 
     results = [(cfg.rid, fitit(cfg)) for cfg in cv.runCfgs]
 
+    plot_dir = files.plotdir
     nam = f"gbm_cv_{cv.run_id}_scaled.png"
-    plot_dir = files.workdir / "plots"
-    if not plot_dir.exists():
-        plot_dir.mkdir()
     fnam = plot_dir / nam
     all_data = [r[1] for r in results]
     all_labels = [r[0] for r in results]

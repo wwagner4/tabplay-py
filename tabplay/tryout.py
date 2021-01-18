@@ -137,15 +137,18 @@ def plot_tryout():
     plt.savefig(fnam)
     print(f"Plotted to {fnam.absolute()}")
 
+
 def surface_tryout():
     x = np.arange(0, 10)
     y = np.arange(0, 10)
     x, y = np.meshgrid(x, y)
-    r = np.sqrt(x**2 + y**2)
+    r = np.sqrt(x ** 2 + y ** 2)
     z = np.sin(r)
     print("--X", x)
     print("--Y", y)
     print("--Z", z)
 
+
 if __name__ == '__main__':
-    surface_tryout()
+    v = np.arange(0, 1.000001, 0.1)
+    print(v)
