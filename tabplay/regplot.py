@@ -90,12 +90,6 @@ def contour_all():
 
 def analyse_target():
     def plot_it(target_values: np.ndarray, plot_id: str, ma_displ: float):
-        def f(v: float) -> int:
-            if v < 4.0:
-                return 1
-            else:
-                return 0
-
         r = np.linspace(0, ma_displ, num=100)
 
         def sc(rv: float) -> int:
