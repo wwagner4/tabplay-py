@@ -76,7 +76,6 @@ class Files:
         return pd.read_csv(self.train_file)
 
 
-
 class Train:
     x_names = ['cont1', 'cont2', 'cont3', 'cont4', 'cont5', 'cont6', 'cont7',
                'cont8', 'cont9', 'cont10', 'cont11', 'cont12', 'cont13',
@@ -141,3 +140,13 @@ class Util:
         parser.add_argument("id", choices=configs.keys(), help="The id to run")
         myargs: argparse.Namespace = parser.parse_args()
         return configs[myargs.id]
+
+    @staticmethod
+    def split_arrays_by_value(x: np.ndarray, y: np.ndarray, split_value: float):
+        y_idx = y >= split_value
+        x1 = x[y_idx, :]
+        y1 = y[y_idx]
+        y_idx = np.invert(y_idx)
+        x2 = x[y_idx, :]
+        y2 = y[y_idx]
+        return x1, x2, y1, y2

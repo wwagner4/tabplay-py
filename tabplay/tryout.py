@@ -6,8 +6,9 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-from tabplay import Files, Train
+from tabplay import Files, Train, Util
 
+util = Util()
 
 def scaler():
     x = [
@@ -149,6 +150,32 @@ def surface_tryout():
     print("--Z", z)
 
 
+def np_sel_rows():
+    a = np.array([True, True, True, False, False])
+    b = np.array([[1, 2, 3, 4, 5], [1, 2, 3, 4, 5]]).T
+    e = b[a, :]
+    print(e)
+
+
+def np_split_x_y():
+
+    rows = 5
+    cols = 3
+
+    y = np.random.random(rows) * 10
+    x = np.random.random(rows * cols).reshape(rows, cols)
+
+    print("x shape", x.shape)
+    print("y shape", y.shape)
+    print("x", x)
+    print("y", y)
+
+    a, b, c, d = util.split_arrays_by_value(x, y, 2.0)
+    print("a", a)
+    print("b", b)
+    print("c", c)
+    print("d", d)
+
+
 if __name__ == '__main__':
-    v = np.arange(0, 1.000001, 0.1)
-    print(v)
+    np_split_x_y()
