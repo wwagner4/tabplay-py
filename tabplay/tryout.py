@@ -9,6 +9,8 @@ from sklearn.preprocessing import StandardScaler
 from tabplay import Files, Train, Util
 
 util = Util()
+files = Files()
+
 
 def scaler():
     x = [
@@ -66,7 +68,6 @@ def split():
         print(y_test)
 
     def large():
-        files = Files()
         t = files.train_df()
         print("t", type(t))
         a, b = train_test_split(t, test_size=0.3)
@@ -80,7 +81,6 @@ def gbm():
     from sklearn.ensemble import GradientBoostingRegressor
     from sklearn.model_selection import train_test_split
 
-    files = Files()
     train = Train()
 
     train_df = files.train_df().head(n=20000)
@@ -158,11 +158,11 @@ def np_sel_rows():
 
 
 def np_split_x_y():
-
     rows = 5
     cols = 3
 
-    y = np.random.random(rows) * 10
+    yv = np.random.random(rows) * 10
+    y = yv.reshape(len(yv), 1)
     x = np.random.random(rows * cols).reshape(rows, cols)
 
     print("x shape", x.shape)

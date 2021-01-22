@@ -143,10 +143,10 @@ class Util:
 
     @staticmethod
     def split_arrays_by_value(x: np.ndarray, y: np.ndarray, split_value: float):
-        y_idx = y >= split_value
-        x1 = x[y_idx, :]
-        y1 = y[y_idx]
+        y_idx = y.flatten() >= split_value
+        x1 = x[y_idx,:]
+        y1 = y[y_idx,:]
         y_idx = np.invert(y_idx)
         x2 = x[y_idx, :]
-        y2 = y[y_idx]
+        y2 = y[y_idx, :]
         return x1, x2, y1, y2

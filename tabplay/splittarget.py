@@ -1,18 +1,19 @@
-from tabplay import Files
+from tabplay import Files, Train, Util
 
 files = Files()
+train = Train()
+util = Util()
 
-df_train = files.train_df()
+df_train = files.train_df().head(20000)
 train_border = 7.94
 train_min = 5.0
 
-df_train_left = df_train.loc[df_train['target'] < train_border]
-df_train_left = df_train_left.loc[df_train_left['target'] > train_min]
-df_train_right = df_train.loc[df_train['target'] >= train_border]
+x = df_train[train.x_names].values
+y = df_train[[train.y_name]].values
 
-print("all", df_train.shape)
-print("left", df_train_left.shape)
-print("right", df_train_right.shape)
+xl, xr, yl, yr = util.split_arrays_by_value(x, y, train_border)
 
-diff = df_train.shape[0] - df_train_left.shape[0] - df_train_right.shape[0]
-print("diff", diff)
+print("xl", xl.shape)
+print("yl", yl.shape)
+print("xr", xr.shape)
+print("yr", yr.shape)
