@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from localsubm import trainit
-from tabplay import Files, Train, MyModel, GradientBoostingConfig
+from tabplay import Files, Train, MyModel
 
 
 @dataclass
@@ -16,7 +16,7 @@ class GbmRunCfg:
     rid: str
     seed: int
     scaled: bool
-    cfg: GradientBoostingConfig
+    cfg: dict
 
 
 @dataclass
@@ -37,19 +37,19 @@ cvs = {
                 rid="3",
                 seed=3847,
                 scaled=True,
-                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=3)
+                cfg={'learning_rate': 0.1, 'max_depth': 3}
             ),
             GbmRunCfg(
                 rid="5",
                 seed=9237,
                 scaled=True,
-                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=5)
+                cfg={'learning_rate': 0.1, 'max_depth': 5}
             ),
             GbmRunCfg(
                 rid="9",
                 seed=92847,
                 scaled=True,
-                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=9)
+                cfg={'learning_rate': 0.1, 'max_depth': 9}
             ),
         ]
     ),
@@ -62,37 +62,37 @@ cvs = {
                 rid="5",
                 seed=9237,
                 scaled=True,
-                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=5)
+                cfg={'learning_rate': 0.1, 'max_depth': 5}
             ),
             GbmRunCfg(
                 rid="8",
                 seed=9237,
                 scaled=True,
-                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=8)
+                cfg={'learning_rate': 0.1, 'max_depth': 8}
             ),
             GbmRunCfg(
                 rid="9",
                 seed=92847,
                 scaled=True,
-                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=9)
+                cfg={'learning_rate': 0.1, 'max_depth': 9}
             ),
             GbmRunCfg(
                 rid="10",
                 seed=383347,
                 scaled=True,
-                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=10)
+                cfg={'learning_rate': 0.1, 'max_depth': 10}
             ),
             GbmRunCfg(
                 rid="12",
                 seed=924537,
                 scaled=True,
-                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=12)
+                cfg={'learning_rate': 0.1, 'max_depth': 12}
             ),
             GbmRunCfg(
                 rid="15",
                 seed=9265847,
                 scaled=True,
-                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=15)
+                cfg={'learning_rate': 0.1, 'max_depth': 15}
             ),
         ]
     ),
@@ -105,31 +105,31 @@ cvs = {
                 rid="0.05",
                 seed=383347,
                 scaled=True,
-                cfg=GradientBoostingConfig(learning_rate=0.05, max_depth=9)
+                cfg={'learning_rate': 0.05, 'max_depth': 9}
             ),
             GbmRunCfg(
                 rid="0.1",
                 seed=383347,
                 scaled=True,
-                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=9)
+                cfg={'learning_rate': 0.1, 'max_depth': 9}
             ),
             GbmRunCfg(
                 rid="0.15",
                 seed=383347,
                 scaled=True,
-                cfg=GradientBoostingConfig(learning_rate=0.15, max_depth=9)
+                cfg={'learning_rate': 0.15, 'max_depth': 9}
             ),
             GbmRunCfg(
                 rid="0.2",
                 seed=924537,
                 scaled=True,
-                cfg=GradientBoostingConfig(learning_rate=0.2, max_depth=9)
+                cfg={'learning_rate': 0.2, 'max_depth': 9}
             ),
             GbmRunCfg(
                 rid="0.15",
                 seed=9265847,
                 scaled=True,
-                cfg=GradientBoostingConfig(learning_rate=0.25, max_depth=9)
+                cfg={'learning_rate': 0.25, 'max_depth': 9}
             ),
         ]
     ),
@@ -142,13 +142,13 @@ cvs = {
                 rid="scaled",
                 seed=383347,
                 scaled=True,
-                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=9)
+                cfg={'learning_rate': 0.1, 'max_depth': 9}
             ),
             GbmRunCfg(
                 rid="NOT scaled",
                 seed=383347,
                 scaled=False,
-                cfg=GradientBoostingConfig(learning_rate=0.1, max_depth=9)
+                cfg={'learning_rate': 0.1, 'max_depth': 9}
             ),
         ]
     ),
@@ -162,7 +162,7 @@ def run(cv: GbmCv):
     print("cv on gbm")
     pprint(cv)
 
-    trainall_df = files.train_df()
+    trainall_df = files.train_df().head(20000)
     print("read data", trainall_df.shape)
 
     x_all = trainall_df[train.x_names].values

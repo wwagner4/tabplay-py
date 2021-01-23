@@ -39,22 +39,6 @@ class MyModel(ABC):
         pass
 
 
-@dataclass
-class GradientBoostingConfig:
-    learning_rate: float
-    max_depth: int
-    n_estimators: int
-    subsample: float
-
-    def __init__(self, learning_rate: float = 0.1,
-                 max_depth: int = 3, n_estimators: int = 100,
-                 subsample: float = 1.0):
-        self.learning_rate = learning_rate
-        self.max_depth = max_depth
-        self.n_estimators = n_estimators
-        self.subsample = subsample
-
-
 class Files:
     workdir: Path
     datadir: Path
@@ -95,13 +79,8 @@ class Train:
         return LinearRegression().fit(x, y)
 
     @staticmethod
-    def fit_gbm(x: np.ndarray, y: np.ndarray,
-                config: GradientBoostingConfig) -> Any:
-        regr = GradientBoostingRegressor(
-            learning_rate=config.learning_rate,
-            max_depth=config.max_depth,
-            n_estimators=config.n_estimators,
-            subsample=config.subsample)
+    def fit_gbm(x: np.ndarray, y: np.ndarray, config: dict) -> Any:
+        regr = GradientBoostingRegressor(**config)
         return regr.fit(x, y)
 
     @staticmethod

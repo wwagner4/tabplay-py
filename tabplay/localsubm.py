@@ -8,7 +8,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-from tabplay import Files, Train, MyModel, GradientBoostingConfig
+from tabplay import Files, Train, MyModel
 
 
 def trainit(seed: int, x: np.ndarray, y: np.ndarray,
@@ -33,7 +33,7 @@ def main():
     ls_id = '04'
 
     def f_gbm(x: np.ndarray, y: np.ndarray) -> MyModel:
-        c = GradientBoostingConfig(learning_rate=0.1, max_depth=9)
+        c = {'learning_rate': 0.1, 'max_depth': 9}
         return train.fit_gbm(x, y, c)
 
     def f_rf(x: np.ndarray, y: np.ndarray) -> MyModel:
