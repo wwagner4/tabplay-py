@@ -30,7 +30,7 @@ docker run \
 tabplay \
 python -u /opt/project/tabplay/gbm.py 02
 
-# random forest
+# random forest @ work
 docker run \
 --detach \
 -v /home/itsv.org.sv-services.at/31100428/prj/tabplay-py:/opt/project \
@@ -38,4 +38,14 @@ docker run \
 --rm \
 tabplay \
 python -u /opt/project/tabplay/random_forest.py 01
+
+# split target @ ben
+docker run \
+--detach \
+-v /home/wwagner4/prj/oldschool/tabplay-py:/opt/project \
+-v /data/work/tabplay:/opt/work \
+--rm \
+tabplay \
+python -u /opt/project/tabplay/splittarget.py
+
 ```
