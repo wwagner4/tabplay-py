@@ -46,6 +46,7 @@ class MyModel(ABC):
 class Files:
     workdir: Path
     datadir: Path
+    plotdir: Path
     train_file: Path
     test_file: Path
 
@@ -76,15 +77,14 @@ class Train:
     def trainit(seed: int, x: np.ndarray, y: np.ndarray,
                 f: Callable[[np.ndarray, np.ndarray], MyModel],
                 scale: bool) -> float:
-        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33,
-                                                            random_state=seed)
+        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=seed)
         xscaler = StandardScaler()
         if scale:
             xscaler.fit(x_train)
             x_train = xscaler.transform(x_train, copy=True)
             x_test = xscaler.transform(x_test, copy=True)
-        esti = f(x_train, y_train)
-        yp = esti.predict(x_test)
+        my_model = f(x_train, y_train)
+        yp = my_model.predict(x_test)
         return mean_squared_error(y_test, yp, squared=False)
 
     @staticmethod
@@ -102,7 +102,10 @@ class Train:
     @staticmethod
     def fit_gbm(x: np.ndarray, y: np.ndarray, config: dict) -> Any:
         regr = GradientBoostingRegressor(**config)
-        return regr.fit(x, y)
+        print("---> gbm fit")
+        resu = regr.fit(x, y.ravel())
+        print("<--- gbm fit")
+        return resu
 
     @staticmethod
     def fit_random_forest(x: np.ndarray, y: np.ndarray, config: dict) -> Any:
