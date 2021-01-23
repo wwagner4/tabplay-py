@@ -3,12 +3,16 @@ import os
 from abc import abstractmethod, ABC
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Callable
 from typing import List, Any
 
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 
 @dataclass
@@ -35,7 +39,7 @@ class CvCfg:
 class MyModel(ABC):
 
     @abstractmethod
-    def predict(self, x):
+    def predict(self, x: np.ndarray) -> np.ndarray:
         pass
 
 
@@ -65,6 +69,23 @@ class Train:
                'cont8', 'cont9', 'cont10', 'cont11', 'cont12', 'cont13',
                'cont14']
     y_name = 'target'
+
+    gbm_optimal_config = {'learning_rate': 0.1, 'max_depth': 9}
+
+    @staticmethod
+    def trainit(seed: int, x: np.ndarray, y: np.ndarray,
+                f: Callable[[np.ndarray, np.ndarray], MyModel],
+                scale: bool) -> float:
+        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33,
+                                                            random_state=seed)
+        xscaler = StandardScaler()
+        if scale:
+            xscaler.fit(x_train)
+            x_train = xscaler.transform(x_train, copy=True)
+            x_test = xscaler.transform(x_test, copy=True)
+        esti = f(x_train, y_train)
+        yp = esti.predict(x_test)
+        return mean_squared_error(y_test, yp, squared=False)
 
     @staticmethod
     def create_submission(subm_file: Path, predictable: Any, test_df, x):
@@ -123,8 +144,8 @@ class Util:
     @staticmethod
     def split_arrays_by_value(x: np.ndarray, y: np.ndarray, split_value: float):
         y_idx = y.flatten() < split_value
-        x1 = x[y_idx,:]
-        y1 = y[y_idx,:]
+        x1 = x[y_idx, :]
+        y1 = y[y_idx, :]
         y_idx = np.invert(y_idx)
         x2 = x[y_idx, :]
         y2 = y[y_idx, :]

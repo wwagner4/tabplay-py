@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from tabplay import Files, Train, Util
+from tabplay import Files, Train, Util, MyModel
 
 files = Files()
 train = Train()
@@ -32,6 +32,40 @@ def all_hists(x_data: np.ndarray, y_data: np.ndarray):
     hist(yr, 'right', f'target values greater {train_border:.2f}', color='b')
 
 
+def straight_forward(x: np.ndarray, y: np.ndarray) -> MyModel:
+    class M(MyModel):
+        train_border: float = 7.94
+        model_left: MyModel
+        model_right: MyModel
+
+        def __init__(self, x_data: np.ndarray, y_data: np.ndarray):
+            xl, xr, yl, yr = util.split_arrays_by_value(x_data, y_data, self.train_border)
+            self.model_left = train.fit_gbm(xl, yl, train.gbm_optimal_config)
+            self.model_right = train.fit_gbm(xr, yr, train.gbm_optimal_config)
+
+        def predict(self, x_test: np.ndarray) -> np.ndarray:
+            pl = self.model_left.predict(x_test)
+            pr = self.model_right.predict(x_test)
+            print("pl", pl.shape)
+            print("pr", pr.shape)
+            return np.maximum(pl, pr)
+
+    return M(x, y)
+
+
+def no_split(x: np.ndarray, y: np.ndarray) -> MyModel:
+    class M(MyModel):
+        model: MyModel
+
+        def __init__(self, x_data: np.ndarray, y_data: np.ndarray):
+            self.model = train.fit_gbm(x_data, y_data, train.gbm_optimal_config)
+
+        def predict(self, x_test: np.ndarray) -> np.ndarray:
+            return self.model.predict(x_test)
+
+    return M(x, y)
+
+
 def main():
     min_data = 5.0
 
@@ -42,7 +76,11 @@ def main():
     print('x', x.shape)
     print('y', y.shape)
 
-    all_hists(x, y)
+    e1 = train.trainit(82374294, x, y, no_split, False)
+    e2 = train.trainit(12380, x, y, straight_forward, False)
+
+    print("no split ", e1)
+    print("staight_forward ", e2)
 
 
 if __name__ == '__main__':

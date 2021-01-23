@@ -1,29 +1,10 @@
 import random as ran
-from typing import Callable
 
 import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
-from sklearn.metrics import mean_squared_error
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
+import pandas as pd
 
 from tabplay import Files, Train, MyModel
-
-
-def trainit(seed: int, x: np.ndarray, y: np.ndarray,
-            f: Callable[[np.ndarray, np.ndarray], MyModel],
-            scale: bool) -> float:
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33,
-                                                        random_state=seed)
-    xscaler = StandardScaler()
-    if scale:
-        xscaler.fit(x_train)
-        x_train = xscaler.transform(x_train, copy=True)
-        x_test = xscaler.transform(x_test, copy=True)
-    esti = f(x_train, y_train)
-    yp = esti.predict(x_test)
-    return mean_squared_error(y_test, yp, squared=False)
 
 
 def main():
@@ -57,15 +38,15 @@ def main():
     x_all = trainall_df[train.x_names].values
     y_all = trainall_df[[train.y_name]].values.ravel()
     print("started random forest")
-    mse_rf = [trainit(se, x_all, y_all, f_rf, scaled) for se in seeds]
+    mse_rf = [train.trainit(se, x_all, y_all, f_rf, scaled) for se in seeds]
     print("finished random forest")
-    mse_gbm = [trainit(se, x_all, y_all, f_gbm, scaled) for se in seeds]
+    mse_gbm = [train.trainit(se, x_all, y_all, f_gbm, scaled) for se in seeds]
     print("finished gbm")
-    mse_linreg = [trainit(se, x_all, y_all, f_linreg, scaled) for se in seeds]
+    mse_linreg = [train.trainit(se, x_all, y_all, f_linreg, scaled) for se in seeds]
     print("finished lin reg")
-    mse_mean = [trainit(se, x_all, y_all, f_mean, scaled) for se in seeds]
+    mse_mean = [train.trainit(se, x_all, y_all, f_mean, scaled) for se in seeds]
     print("finished lin mean")
-    mse_median = [trainit(se, x_all, y_all, f_median, scaled) for se in seeds]
+    mse_median = [train.trainit(se, x_all, y_all, f_median, scaled) for se in seeds]
     print("finished lin median")
 
     if scaled:

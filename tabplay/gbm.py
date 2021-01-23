@@ -7,9 +7,7 @@ from typing import List
 import matplotlib.pyplot as plt
 import numpy as np
 
-from localsubm import trainit
 from tabplay import Files, Train, MyModel
-
 
 @dataclass
 class GbmRunCfg:
@@ -177,7 +175,7 @@ def run(cv: GbmCv):
         ran.seed(rc.seed)
         seeds = [ran.randint(0, 100000) for _ in range(cv.cnt)]
 
-        return [trainit(s, x_all, y_all, f_gbm, rc.scaled) for s in seeds]
+        return [train.trainit(s, x_all, y_all, f_gbm, rc.scaled) for s in seeds]
 
     results = [(cfg.rid, fitit(cfg)) for cfg in cv.runCfgs]
 

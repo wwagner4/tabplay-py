@@ -6,7 +6,6 @@ from pprint import pprint
 import matplotlib.pyplot as plt
 import numpy as np
 
-from localsubm import trainit
 from tabplay import Files, Train, MyModel, CvCfg, DataSetCfg, RunCfg
 
 cvs = {
@@ -142,7 +141,7 @@ def run(cv: CvCfg):
         def f_rf(x: np.ndarray, y: np.ndarray) -> MyModel:
             return train.fit_random_forest(x, y, rc.cfg)
 
-        return trainit(random.randint(0, 100000), x_all, y_all, f_rf, rc.scaled)
+        return train.trainit(random.randint(0, 100000), x_all, y_all, f_rf, rc.scaled)
     for ds_cfg in cv.ds_cfgs:
         print("data set", ds_cfg.ds_id)
         results = [(cfg.run_id, fitit(cfg)) for cfg in ds_cfg.run_cfgs]

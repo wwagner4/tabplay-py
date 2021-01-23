@@ -112,7 +112,6 @@ def argparse_tryout():
 
 
 def plot_tryout():
-    files = Files()
     results = [
         ('A', 0.71),
         ('B', 0.70),
@@ -178,4 +177,9 @@ def np_split_x_y():
 
 
 if __name__ == '__main__':
-    np_split_x_y()
+    a = np.random.random(4)
+    b = np.random.random(4)
+    print("a", a.shape)
+    print("b", b.shape)
+    c = np.maximum(a, b)
+    print(c)
