@@ -4,10 +4,10 @@ import numpy as np
 from tabplay import Files, Train, Util
 
 
-def hist(data: np.ndarray, hist_id: str, title: str):
+def hist(data: np.ndarray, hist_id: str, title: str, color: str):
     plt.clf()
 
-    plt.hist(data, 50, facecolor='green', alpha=0.75)
+    plt.hist(x=data, bins=100, facecolor=color, alpha=0.75)
     plt.ylabel('count')
     plt.xlabel('target')
     plt.title(title)
@@ -40,5 +40,6 @@ print("yl", yl.shape)
 print("xr", xr.shape)
 print("yr", yr.shape)
 
-hist(yl, 'left', f'target values smaller {train_border:.2f}')
-hist(yr, 'right', f'target values greater {train_border:.2f}')
+hist(y, 'all', f'target values', color='r')
+hist(yl, 'left', f'target values smaller {train_border:.2f}', color='g')
+hist(yr, 'right', f'target values greater {train_border:.2f}', color='b')
