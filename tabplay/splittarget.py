@@ -11,7 +11,7 @@ def hist(data: np.ndarray, hist_id: str, title: str):
     plt.ylabel('count')
     plt.xlabel('target')
     plt.title(title)
-    plt.axis([4, 12, 0, 25000])
+    plt.axis([5, 10, 0, 10000])
     plt.grid(True)
 
     plot_dir = files.plotdir
@@ -27,10 +27,12 @@ util = Util()
 
 df_train = files.train_df()
 train_border = 7.94
+min_data = 5.0
 
-x = df_train[train.x_names].values
-y = df_train[[train.y_name]].values
+x_all = df_train[train.x_names].values
+y_all = df_train[[train.y_name]].values
 
+_, x, _, y = util.split_arrays_by_value(x_all, y_all, min_data)
 xl, xr, yl, yr = util.split_arrays_by_value(x, y, train_border)
 
 print("xl", xl.shape)
