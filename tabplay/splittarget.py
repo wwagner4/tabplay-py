@@ -125,9 +125,16 @@ def run_split_train(split_train: SplitTrain) -> (str, float):
 
 def train_it(x, y):
     split_trains = [
-        SplitTrain("no split", 123123, x, y, SplitModels.no_split),
-        SplitTrain("tuple", 838723, x, y, SplitModels.tuple_model),
-        SplitTrain("triple", 192383, x, y, SplitModels.triple_model),
+        SplitTrain("no split", 1213, x, y, SplitModels.no_split),
+        SplitTrain("no split", 1323, x, y, SplitModels.no_split),
+        SplitTrain("no split", 1223, x, y, SplitModels.no_split),
+        SplitTrain("no split", 1233, x, y, SplitModels.no_split),
+        SplitTrain("no split", 1232, x, y, SplitModels.no_split),
+        SplitTrain("tuple", 83823, x, y, SplitModels.tuple_model),
+        SplitTrain("triple", 19283, x, y, SplitModels.triple_model),
+        SplitTrain("triple", 1983, x, y, SplitModels.triple_model),
+        SplitTrain("triple", 195283, x, y, SplitModels.triple_model),
+        SplitTrain("triple", 192683, x, y, SplitModels.triple_model),
     ]
 
     with multiprocessing.Pool() as pool:
