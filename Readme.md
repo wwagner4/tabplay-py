@@ -1,5 +1,12 @@
 ## Solutions for the kaggle competition tabular playground
 
+
+### Git
+```
+git clone https://github.com/wwagner4/tabplay-py.git
+```
+
+
 ### Run in docker
 
 ```
