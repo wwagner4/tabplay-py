@@ -7,6 +7,10 @@ git clone https://github.com/wwagner4/tabplay-py.git
 ```
 
 
+### Build in docker
+```
+docker build -t tabplay .
+```
 ### Run in docker
 
 ```
@@ -51,8 +55,19 @@ docker run \
 --detach \
 -v /home/wwagner4/prj/oldschool/tabplay-py:/opt/project \
 -v /data/work/tabplay:/opt/work \
---rm \
 tabplay \
 python -u /opt/project/tabplay/splittarget.py
+
+# split target @ bob
+docker run \
+--detach \
+-v /home/wwagner4/prj/kaggle/tabplay-py:/opt/project \
+-v /home/wwagner4/work/kaggle/tabplay:/opt/work \
+tabplay \
+python -u /opt/project/tabplay/splittarget.py
+
+
+
+
 
 ```

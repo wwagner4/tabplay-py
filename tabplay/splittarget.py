@@ -155,11 +155,10 @@ def run_train_it():
                 SplitTrain("no split", 1217, x_dat, y_dat, SplitModels.no_split),
                 SplitTrain("triple max", 1983, x_dat, y_dat, SplitModels.triple_model_maximum),
             ],
-            '02 ': [
+            '02': [
                 SplitTrain("triple mean of g", 1283, x_dat, y_dat, SplitModels.triple_model_mean_of_greatest),
             ]
         }
-
         split_trains = split_train_cfgs[tid]
         for st in split_trains:
             with multiprocessing.Pool() as pool:
@@ -171,6 +170,7 @@ def run_train_it():
                     result.setdefault(i[0], []).append(i[1])
                 pprint(result)
 
+    print(f"---> run_train_it id:{tid} cnt:{cnt}")
     df_train = files.train_df()
     x_all = df_train[Train.x_names].values
     y_all = df_train[[Train.y_name]].values
@@ -179,6 +179,7 @@ def run_train_it():
     print('y', y.shape)
 
     train_it(x, y)
+    print(f"<--- run_train_it id:{tid} cnt:{cnt}")
 
 
 def run_boxplot():
