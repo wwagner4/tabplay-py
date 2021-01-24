@@ -8,6 +8,16 @@ from sklearn.model_selection import train_test_split
 
 from tabplay import Files, Train, Util, MyModel
 
+"""
+# @ ben
+docker run \
+ --detach \
+ -v /home/wwagner4/prj/oldschool/tabplay-py:/opt/project \
+ -v /data/work/tabplay:/opt/work \
+ tabplay \
+ python -u /opt/project/tabplay/splittarget.py
+"""
+
 train_border: float = 7.94
 min_data = 5.0
 files = Files()
@@ -87,7 +97,10 @@ def hist(data: np.ndarray, hist_id: str, title: str, color: str):
     print("wrote histogran to", fnam.absolute())
 
 
-def all_hists(x_data: np.ndarray, y_data: np.ndarray):
+def run_hists():
+    df_train = files.train_df()
+    x_data = df_train[Train.x_names].values
+    y_data = df_train[[Train.y_name]].values
     xl, xr, yl, yr = Util.split_arrays_by_value(x_data, y_data, train_border)
     hist(y_data, 'all', f'target values', color='r')
     hist(yl, 'left', f'target values smaller {train_border:.2f}', color='g')
@@ -119,30 +132,35 @@ class SplitTrain:
     f: Callable
 
 
-def run_split_train(split_train: SplitTrain) -> (str, float):
+def process_split_train(split_train: SplitTrain) -> (str, float):
     return split_train.desc, Train.trainit(split_train.seed, split_train.x, split_train.y, split_train.f, False)
 
 
-def train_it(x, y):
-    split_trains = [
-        SplitTrain("no split", 1213, x, y, SplitModels.no_split),
-        SplitTrain("no split", 1323, x, y, SplitModels.no_split),
-        SplitTrain("no split", 1223, x, y, SplitModels.no_split),
-        SplitTrain("no split", 1233, x, y, SplitModels.no_split),
-        SplitTrain("no split", 1232, x, y, SplitModels.no_split),
-        SplitTrain("tuple", 83823, x, y, SplitModels.tuple_model),
-        SplitTrain("triple", 19283, x, y, SplitModels.triple_model),
-        SplitTrain("triple", 1983, x, y, SplitModels.triple_model),
-        SplitTrain("triple", 195283, x, y, SplitModels.triple_model),
-        SplitTrain("triple", 192683, x, y, SplitModels.triple_model),
-    ]
+def run_train_it():
+    def train_it(x_dat, y_dat):
+        split_trains = [
+            SplitTrain("no split", 1213, x_dat, y_dat, SplitModels.no_split),
+            SplitTrain("no split", 1323, x_dat, y_dat, SplitModels.no_split),
+            SplitTrain("no split", 1223, x_dat, y_dat, SplitModels.no_split),
+            SplitTrain("no split", 1233, x_dat, y_dat, SplitModels.no_split),
+            SplitTrain("no split", 1232, x_dat, y_dat, SplitModels.no_split),
+            SplitTrain("tuple", 83823, x_dat, y_dat, SplitModels.tuple_model),
+            SplitTrain("tuple", 8323, x_dat, y_dat, SplitModels.tuple_model),
+            SplitTrain("tuple", 8383, x_dat, y_dat, SplitModels.tuple_model),
+            SplitTrain("tuple", 8382, x_dat, y_dat, SplitModels.tuple_model),
+            SplitTrain("triple", 19283, x_dat, y_dat, SplitModels.triple_model),
+            SplitTrain("triple", 1983, x_dat, y_dat, SplitModels.triple_model),
+            SplitTrain("triple", 195283, x_dat, y_dat, SplitModels.triple_model),
+            SplitTrain("triple", 192683, x_dat, y_dat, SplitModels.triple_model),
+            SplitTrain("triple", 92683, x_dat, y_dat, SplitModels.triple_model),
+            SplitTrain("triple", 2683, x_dat, y_dat, SplitModels.triple_model),
+            SplitTrain("triple", 83, x_dat, y_dat, SplitModels.triple_model),
+        ]
 
-    with multiprocessing.Pool() as pool:
-        for desc, error in pool.map(run_split_train, split_trains):
-            print(desc, error)
+        with multiprocessing.Pool() as pool:
+            for desc, error in pool.map(process_split_train, split_trains):
+                print(desc, error)
 
-
-def main():
     df_train = files.train_df()
     x_all = df_train[Train.x_names].values
     y_all = df_train[[Train.y_name]].values
@@ -151,6 +169,65 @@ def main():
     print('y', y.shape)
 
     train_it(x, y)
+
+
+def run_boxplot():
+    @dataclass
+    class Cfg:
+        data: dict
+
+    cfgs = {
+        '01': Cfg(
+            data={
+                'no_split': [
+                    0.7039493389539233,
+                    0.7013205916708355,
+                    0.7016550741001032,
+                    0.7019636532330444,
+                    0.7013762482873541,
+                ],
+                'triple': [
+                    0.6997663848174556,
+                    0.7029153140637895,
+                    0.703757391969722,
+                    0.7019180929865728,
+                ],
+            }
+        ),
+        '02': Cfg(
+            data={
+                'no_split': [
+                    0.7040340944617459,
+                    0.7012621930207075,
+                    0.7015999076371211,
+                    0.7019887945001956,
+                    0.7013959623820328,
+                ],
+                'triple': [
+                    0.702925914913469,
+                    0.7038798217630783,
+                    0.7019596574480624,
+                    0.7025962353500002,
+                    0.7002881835337523,
+                    0.7038416475633518,
+                ],
+            }
+        )
+    }
+    pid = '02'
+    cfg = cfgs[pid]
+    plt.boxplot(cfg.data.values(), labels=cfg.data.keys())
+    plot_dir = files.plotdir
+    nam = f"splittarget_result_{pid}.png"
+    fnam = plot_dir / nam
+    plt.savefig(fnam)
+    print("wrote splittarget result to", fnam.absolute())
+
+
+def main():
+    # run_hists()
+    # run_train_it()
+    run_boxplot()
 
 
 if __name__ == '__main__':
