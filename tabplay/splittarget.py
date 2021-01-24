@@ -47,22 +47,42 @@ class SplitModels:
 
     @staticmethod
     def triple_model_maximum(x: np.ndarray, y: np.ndarray) -> MyModel:
-        return SplitModels._triple_model(x, y, np.maximum)
+        cm = lambda xd, yd: Util.cut_middle(xd, yd, 0, 10)
+        return SplitModels._triple_model(x, y, np.maximum, cm)
+
+    @staticmethod
+    def triple_model_maximum_narrow_m(x: np.ndarray, y: np.ndarray) -> MyModel:
+        cm = lambda xd, yd: Util.cut_middle(xd, yd, 7.4, 8.4)
+        return SplitModels._triple_model(x, y, np.maximum, cm)
+
+    @staticmethod
+    def triple_model_maximum_narrow_s(x: np.ndarray, y: np.ndarray) -> MyModel:
+        cm = lambda xd, yd: Util.cut_middle(xd, yd, 7.88, 8.0)
+        return SplitModels._triple_model(x, y, np.maximum, cm)
+
+    @staticmethod
+    def triple_model_maximum_narrow_xs(x: np.ndarray, y: np.ndarray) -> MyModel:
+        cm = lambda xd, yd: Util.cut_middle(xd, yd, 7.92, 7.96)
+        return SplitModels._triple_model(x, y, np.maximum, cm)
 
     @staticmethod
     def triple_model_mean_of_greatest(x: np.ndarray, y: np.ndarray) -> MyModel:
-        return SplitModels._triple_model(x, y, Util.mean_of_greatest)
+        cm = lambda xd, yd: Util.cut_middle(xd, yd, 0, 10)
+        return SplitModels._triple_model(x, y, Util.mean_of_greatest, cm)
 
     @staticmethod
-    def _triple_model(x: np.ndarray, y: np.ndarray, combine: Callable) -> MyModel:
+    def _triple_model(x: np.ndarray, y: np.ndarray, combine: Callable, cut_middle: Callable) -> MyModel:
         class M(MyModel):
             model_all: MyModel
             model_left: MyModel
             model_right: MyModel
 
+
             def __init__(self, x_data: np.ndarray, y_data: np.ndarray):
+
                 xl, xr, yl, yr = Util.split_arrays_by_value(x_data, y_data, train_border)
-                self.model_all = Train.fit_gbm(x_data, y_data, Train.gbm_optimal_config)
+                xm, ym = cut_middle(x_data, y_data)
+                self.model_all = Train.fit_gbm(xm, ym, Train.gbm_optimal_config)
                 self.model_left = Train.fit_gbm(xl, yl, Train.gbm_optimal_config)
                 self.model_right = Train.fit_gbm(xr, yr, Train.gbm_optimal_config)
 
@@ -147,7 +167,7 @@ def process_split_train(split_train: SplitTrain) -> (str, float):
 
 def run_train_it():
     cnt = 20
-    tid = '02'
+    tid = '03'
 
     def train_it(x_dat, y_dat):
         split_train_cfgs = {
@@ -157,6 +177,11 @@ def run_train_it():
             ],
             '02': [
                 SplitTrain("triple mean of g", 1283, x_dat, y_dat, SplitModels.triple_model_mean_of_greatest),
+            ],
+            '03': [
+                SplitTrain("triple cut m", 1281113, x_dat, y_dat, SplitModels.triple_model_maximum_narrow_m),
+                SplitTrain("triple cut s", 1232823, x_dat, y_dat, SplitModels.triple_model_maximum_narrow_s),
+                SplitTrain("triple cut xs", 145453, x_dat, y_dat, SplitModels.triple_model_maximum_narrow_xs),
             ]
         }
         split_trains = split_train_cfgs[tid]
@@ -270,6 +295,28 @@ def run_boxplot():
                     0.7028908903141194,
                     0.7038925429247523,
                 ],
+                'triple mean of g': [
+                    0.7986880745333453,
+                    0.7998060779354146,
+                    0.7996435960022191,
+                    0.7992940746704614,
+                    0.7964792340691824,
+                    0.7982232977720759,
+                    0.7965940251812592,
+                    0.7990267085982752,
+                    0.7981864832574558,
+                    0.7989153431955245,
+                    0.7986177923723153,
+                    0.7970921731142104,
+                    0.7990817981251812,
+                    0.7992400347281507,
+                    0.7989207047181026,
+                    0.7969949945999292,
+                    0.7988214870022083,
+                    0.8020464176159474,
+                    0.7996150270896095,
+                    0.79826040414,
+                ]
             }
         )
     }

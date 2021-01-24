@@ -168,3 +168,9 @@ class Util:
             return np.array([x for x in row if x >= _max * trigger]).mean()
 
         return np.array([mog(row) for row in np.array([*vectors]).T])
+
+    @staticmethod
+    def cut_middle(xd: np.ndarray, yd: np.ndarray, min_val: float, max_val: float) -> (np.ndarray, np.ndarray):
+        xl1, _, yl1, _ = Util.split_arrays_by_value(xd, yd, max_val)
+        _, xo, _, yo = Util.split_arrays_by_value(xl1, yl1, min_val)
+        return xo, yo
