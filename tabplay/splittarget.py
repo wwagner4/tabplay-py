@@ -46,7 +46,15 @@ class SplitModels:
         return M(x, y)
 
     @staticmethod
-    def triple_model(x: np.ndarray, y: np.ndarray) -> MyModel:
+    def triple_model_maximum(x: np.ndarray, y: np.ndarray) -> MyModel:
+        return SplitModels._triple_model(x, y, np.maximum)
+
+    @staticmethod
+    def triple_model_mean_of_greatest(x: np.ndarray, y: np.ndarray) -> MyModel:
+        return SplitModels._triple_model(x, y, Util.mean_of_greatest)
+
+    @staticmethod
+    def _triple_model(x: np.ndarray, y: np.ndarray, combine: Callable) -> MyModel:
         class M(MyModel):
             model_all: MyModel
             model_left: MyModel
@@ -65,7 +73,7 @@ class SplitModels:
                 print("pa", pa.shape)
                 print("pl", pl.shape)
                 print("pr", pr.shape)
-                return np.maximum(pa, pl, pr)
+                return combine(pa, pl, pr)
 
         return M(x, y)
 
@@ -139,13 +147,20 @@ def process_split_train(split_train: SplitTrain) -> (str, float):
 
 def run_train_it():
     cnt = 20
+    tid = '02'
 
     def train_it(x_dat, y_dat):
-        split_trains = [
-            SplitTrain("no split", 1213, x_dat, y_dat, SplitModels.no_split),
-            SplitTrain("triple", 19283, x_dat, y_dat, SplitModels.triple_model),
-        ]
+        split_train_cfgs = {
+            '01': [
+                SplitTrain("no split", 1217, x_dat, y_dat, SplitModels.no_split),
+                SplitTrain("triple max", 1983, x_dat, y_dat, SplitModels.triple_model_maximum),
+            ],
+            '02 ': [
+                SplitTrain("triple mean of g", 1283, x_dat, y_dat, SplitModels.triple_model_mean_of_greatest),
+            ]
+        }
 
+        split_trains = split_train_cfgs[tid]
         for st in split_trains:
             with multiprocessing.Pool() as pool:
                 np.random.seed(st.seed)
@@ -269,8 +284,8 @@ def run_boxplot():
 
 def main():
     # run_hists()
-    # run_train_it()
-    run_boxplot()
+    run_train_it()
+    # run_boxplot()
 
 
 if __name__ == '__main__':

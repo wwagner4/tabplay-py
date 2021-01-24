@@ -176,5 +176,13 @@ def np_split_x_y():
     print("d", d0)
 
 
+def tryout_mean_of_the_greatest():
+    a = np.array([1.37, 2.4, 4., 7.1])
+    b = np.array([1.4, 2.5, 1., 7.])
+    c = np.array([1.4, 0.4, 1., 7.])
+    y = Util.mean_of_greatest(a, b, c)
+    print('amog:', y)
+
+
 if __name__ == '__main__':
-    np_split_x_y()
+    raise ValueError("nothing defined")   

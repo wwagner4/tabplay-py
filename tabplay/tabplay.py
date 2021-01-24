@@ -1,5 +1,6 @@
 import argparse
 import os
+import sys
 from abc import abstractmethod, ABC
 from dataclasses import dataclass
 from pathlib import Path
@@ -159,3 +160,11 @@ class Util:
         else:
             y2 = y[y_idx, :]
         return x1, x2, y1, y2
+
+    @staticmethod
+    def mean_of_greatest(*vectors: np.ndarray, trigger: float = 0.9) -> np.ndarray:
+        def mog(row: np.ndarray) -> float:
+            _max = row.max(initial=sys.float_info.min)
+            return np.array([x for x in row if x >= _max * trigger]).mean()
+
+        return np.array([mog(row) for row in np.array([*vectors]).T])
