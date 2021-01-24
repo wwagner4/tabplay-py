@@ -64,7 +64,6 @@ def contour_all():
                 'RdYlBu', 'RdYlGn', 'Spectral', 'coolwarm', 'bwr', 'seismic']
         """
         ax = plt.subplot(rs, cols, plot_idx)
-        # ax.contourf(x, y, z, cmap='Spectral', antialiased=True, levels=30)
         ax.contour(x, y, z, cmap='PuOr', antialiased=True, levels=20)
         ax.set_xlabel(conf.nam_x)
         ax.set_ylabel(conf.nam_y)

@@ -9,6 +9,7 @@ import numpy as np
 
 from tabplay import Files, Train, MyModel
 
+
 @dataclass
 class GbmRunCfg:
     rid: str

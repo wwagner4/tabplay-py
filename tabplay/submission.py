@@ -5,7 +5,7 @@ from typing import Callable
 import pandas as pd
 import numpy as np
 
-from tabplay import Files, Train, MyModel, Util, GradientBoostingConfig
+from tabplay import Files, Train, MyModel, Util
 
 files = Files()
 train = Train()
@@ -28,8 +28,7 @@ configs = {
     '02': SubmConfig(
         s_id='gbm_02',
         s_description='Predict target with a gradient boost regressor. max depth: 9, learning_rate: 0.1',
-        f_model=lambda x, y: train.fit_gbm(x, y,
-                                           GradientBoostingConfig(learning_rate=0.1, max_depth=9))
+        f_model=lambda x, y: train.fit_gbm(x, y, {'learning_rate': 0.1, 'max_depth': 9})
     ),
 
 }

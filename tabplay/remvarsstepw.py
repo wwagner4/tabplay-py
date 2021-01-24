@@ -4,7 +4,6 @@ from typing import List, Any, Tuple
 
 from sklearn.preprocessing import StandardScaler
 
-from localsubm import trainit
 from tabplay import Files, Train, MyModel
 import matplotlib.pyplot as plt
 import numpy as np
@@ -28,7 +27,6 @@ class Conf:
 
 y_name = 'target'
 files = Files()
-train = Train()
 cnt = 100
 
 train_df = files.train_df()
@@ -39,22 +37,22 @@ yscaler = StandardScaler()
 
 def doit(conf: Conf):
     def f_linreg(x: np.ndarray, y: np.ndarray) -> MyModel:
-        return train.fit_linreg(x, y)
+        return Train.fit_linreg(x, y)
 
     def tr(ni: int) -> Tuple:
         print("processing", conf.x_names[ni])
         xv = remvals(conf.x_names, [ni])
         x = train_df[xv].values
-        y = train_df[[train.y_name]].values
+        y = train_df[[Train.y_name]].values
         a = conf.x_names[ni]
-        b = [trainit(i + conf.seed + ni, x, y, f_linreg, conf.scaled) for i in
+        b = [Train.trainit(i + conf.seed + ni, x, y, f_linreg, conf.scaled) for i in
              range(cnt)]
         return a, b
 
     x_all = train_df[conf.x_names].values
-    y_all = train_df[[train.y_name]].values
+    y_all = train_df[[Train.y_name]].values
     tuple_all = "all", [
-        trainit(conf.seed + i, x_all, y_all, f_linreg, conf.scaled) for i in
+        Train.trainit(conf.seed + i, x_all, y_all, f_linreg, conf.scaled) for i in
         range(cnt)]
     median_all = statistics.median(tuple_all[1])
 
@@ -95,5 +93,5 @@ def doit(conf: Conf):
         doit(next_conf)
 
 
-start_conf = Conf(id=700, seed=8979, scaled=True, x_names=train.x_names)
+start_conf = Conf(id=700, seed=8979, scaled=True, x_names=Train.x_names)
 doit(start_conf)

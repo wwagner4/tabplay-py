@@ -1,5 +1,6 @@
 import multiprocessing
 from dataclasses import dataclass
+from pprint import pprint
 from typing import Callable
 
 import matplotlib.pyplot as plt
@@ -137,29 +138,23 @@ def process_split_train(split_train: SplitTrain) -> (str, float):
 
 
 def run_train_it():
+    cnt = 20
+
     def train_it(x_dat, y_dat):
         split_trains = [
             SplitTrain("no split", 1213, x_dat, y_dat, SplitModels.no_split),
-            SplitTrain("no split", 1323, x_dat, y_dat, SplitModels.no_split),
-            SplitTrain("no split", 1223, x_dat, y_dat, SplitModels.no_split),
-            SplitTrain("no split", 1233, x_dat, y_dat, SplitModels.no_split),
-            SplitTrain("no split", 1232, x_dat, y_dat, SplitModels.no_split),
-            SplitTrain("tuple", 83823, x_dat, y_dat, SplitModels.tuple_model),
-            SplitTrain("tuple", 8323, x_dat, y_dat, SplitModels.tuple_model),
-            SplitTrain("tuple", 8383, x_dat, y_dat, SplitModels.tuple_model),
-            SplitTrain("tuple", 8382, x_dat, y_dat, SplitModels.tuple_model),
             SplitTrain("triple", 19283, x_dat, y_dat, SplitModels.triple_model),
-            SplitTrain("triple", 1983, x_dat, y_dat, SplitModels.triple_model),
-            SplitTrain("triple", 195283, x_dat, y_dat, SplitModels.triple_model),
-            SplitTrain("triple", 192683, x_dat, y_dat, SplitModels.triple_model),
-            SplitTrain("triple", 92683, x_dat, y_dat, SplitModels.triple_model),
-            SplitTrain("triple", 2683, x_dat, y_dat, SplitModels.triple_model),
-            SplitTrain("triple", 83, x_dat, y_dat, SplitModels.triple_model),
         ]
 
-        with multiprocessing.Pool() as pool:
-            for desc, error in pool.map(process_split_train, split_trains):
-                print(desc, error)
+        for st in split_trains:
+            with multiprocessing.Pool() as pool:
+                np.random.seed(st.seed)
+                seeds = np.random.randint(0, 1000000, cnt)
+                sts = [SplitTrain(desc=st.desc, seed=s, x=st.x, y=st.y, f=st.f) for s in seeds]
+                result = {}
+                for i in pool.map(process_split_train, sts):
+                    result.setdefault(i[0], []).append(i[1])
+                pprint(result)
 
     df_train = files.train_df()
     x_all = df_train[Train.x_names].values
@@ -212,9 +207,57 @@ def run_boxplot():
                     0.7038416475633518,
                 ],
             }
+        ),
+        '03': Cfg(
+            data={
+                'triple': [
+                    0.7034574080360404,
+                    0.7013682751928109,
+                    0.7039666641729853,
+                    0.7019976854314919,
+                    0.6997011829206079,
+                    0.7026926219215773,
+                    0.7004161859403136,
+                    0.7045940317800061,
+                    0.7022860223744184,
+                    0.7017464161059427,
+                    0.7033206731642525,
+                    0.7027561629313278,
+                    0.702550820244086,
+                    0.7037602289066305,
+                    0.7017613795853135,
+                    0.701943261631429,
+                    0.7041012262447615,
+                    0.7020766932988456,
+                    0.7025875804429066,
+                    0.7025652516936456,
+                ],
+                'no split': [
+                    0.7009199711774573,
+                    0.7014282805510063,
+                    0.7031982159585766,
+                    0.7024588163765331,
+                    0.6999652080488968,
+                    0.7012884086845848,
+                    0.7025801527504894,
+                    0.702324032893071,
+                    0.7009962556988304,
+                    0.7010960945547321,
+                    0.7017451433588406,
+                    0.7021371837073322,
+                    0.7008733939329123,
+                    0.7025726175124827,
+                    0.7014632972039827,
+                    0.7027996873054194,
+                    0.7019968076158548,
+                    0.7032934889252749,
+                    0.7028908903141194,
+                    0.7038925429247523,
+                ],
+            }
         )
     }
-    pid = '02'
+    pid = '03'
     cfg = cfgs[pid]
     plt.boxplot(cfg.data.values(), labels=cfg.data.keys())
     plot_dir = files.plotdir

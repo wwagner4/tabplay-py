@@ -41,10 +41,10 @@ def scaler():
     yscaler = StandardScaler()
     xscaler.fit(x)
     yscaler.fit(y)
-    a = xscaler.transform(x1)
-    pprint(a)
-    b = xscaler.inverse_transform(a)
-    pprint(b)
+    a0 = xscaler.transform(x1)
+    pprint(a0)
+    b0 = xscaler.inverse_transform(a0)
+    pprint(b0)
     a1 = yscaler.transform(y1)
     pprint(a1)
     b1 = yscaler.inverse_transform(a1)
@@ -70,8 +70,8 @@ def split():
     def large():
         t = files.train_df()
         print("t", type(t))
-        a, b = train_test_split(t, test_size=0.3)
-        print("a,b", type(a), type(b), a.shape, b.shape)
+        a0, b0 = train_test_split(t, test_size=0.3)
+        print("a,b", type(a0), type(b0), a0.shape, b0.shape)
 
     small()
     large()
@@ -150,9 +150,9 @@ def surface_tryout():
 
 
 def np_sel_rows():
-    a = np.array([True, True, True, False, False])
-    b = np.array([[1, 2, 3, 4, 5], [1, 2, 3, 4, 5]]).T
-    e = b[a, :]
+    a0 = np.array([True, True, True, False, False])
+    b0 = np.array([[1, 2, 3, 4, 5], [1, 2, 3, 4, 5]]).T
+    e = b0[a0, :]
     print(e)
 
 
@@ -169,11 +169,11 @@ def np_split_x_y():
     print("x", x)
     print("y", y)
 
-    a, b, c, d = util.split_arrays_by_value(x, y, 2.0)
-    print("a", a)
-    print("b", b)
-    print("c", c)
-    print("d", d)
+    a0, b0, c0, d0 = util.split_arrays_by_value(x, y, 2.0)
+    print("a", a0)
+    print("b", b0)
+    print("c", c0)
+    print("d", d0)
 
 
 if __name__ == '__main__':
