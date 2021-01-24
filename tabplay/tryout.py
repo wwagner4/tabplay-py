@@ -177,9 +177,4 @@ def np_split_x_y():
 
 
 if __name__ == '__main__':
-    a = np.random.random(4)
-    b = np.random.random(4)
-    print("a", a.shape)
-    print("b", b.shape)
-    c = np.maximum(a, b)
-    print(c)
+    np_split_x_y()

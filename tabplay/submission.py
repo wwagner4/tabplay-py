@@ -5,6 +5,7 @@ from typing import Callable
 import pandas as pd
 import numpy as np
 
+from splittarget import SplitModels
 from tabplay import Files, Train, MyModel, Util
 
 files = Files()
@@ -29,6 +30,11 @@ configs = {
         s_id='gbm_02',
         s_description='Predict target with a gradient boost regressor. max depth: 9, learning_rate: 0.1',
         f_model=lambda x, y: train.fit_gbm(x, y, {'learning_rate': 0.1, 'max_depth': 9})
+    ),
+    '03': SubmConfig(
+        s_id='split_target_triple_01',
+        s_description='Predict target by triple model',
+        f_model=SplitModels.triple_model
     ),
 
 }
