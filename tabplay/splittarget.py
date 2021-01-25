@@ -18,8 +18,7 @@ docker run \
  tabplay \
  python -u /opt/project/tabplay/splittarget.py
 """
-
-train_border: float = 7.94
+default_train_border = 7.94
 min_data = 5.0
 files = Files()
 
@@ -32,9 +31,12 @@ class SplitModels:
             model_right: MyModel
 
             def __init__(self, x_data: np.ndarray, y_data: np.ndarray):
-                xl, xr, yl, yr = Util.split_arrays_by_value(x_data, y_data, train_border)
-                self.model_left = Train.fit_gbm(xl, yl, Train.gbm_optimal_config)
-                self.model_right = Train.fit_gbm(xr, yr, Train.gbm_optimal_config)
+                xl, xr, yl, yr = Util.split_arrays_by_value(x_data, y_data,
+                                                            default_train_border)
+                self.model_left = Train.fit_gbm(xl, yl,
+                                                Train.gbm_optimal_config)
+                self.model_right = Train.fit_gbm(xr, yr,
+                                                 Train.gbm_optimal_config)
 
             def predict(self, x_test: np.ndarray) -> np.ndarray:
                 pl = self.model_left.predict(x_test)
@@ -44,6 +46,30 @@ class SplitModels:
                 return np.maximum(pl, pr)
 
         return M(x, y)
+
+    @staticmethod
+    def triple_model_train_border_xs(x: np.ndarray, y: np.ndarray) -> MyModel:
+        cm = lambda xd, yd: Util.cut_middle(xd, yd, 0, 10)
+        return SplitModels._triple_model(x, y, np.maximum, cm, train_border=7.)
+
+    def triple_model_train_border_s(x: np.ndarray, y: np.ndarray) -> MyModel:
+        cm = lambda xd, yd: Util.cut_middle(xd, yd, 0, 10)
+        return SplitModels._triple_model(x, y, np.maximum, cm, train_border=7.5)
+
+    @staticmethod
+    def triple_model_train_border_m(x: np.ndarray, y: np.ndarray) -> MyModel:
+        cm = lambda xd, yd: Util.cut_middle(xd, yd, 0, 10)
+        return SplitModels._triple_model(x, y, np.maximum, cm, train_border=8.0)
+
+    @staticmethod
+    def triple_model_train_border_l(x: np.ndarray, y: np.ndarray) -> MyModel:
+        cm = lambda xd, yd: Util.cut_middle(xd, yd, 0, 10)
+        return SplitModels._triple_model(x, y, np.maximum, cm, train_border=8.5)
+
+    @staticmethod
+    def triple_model_train_border_xl(x: np.ndarray, y: np.ndarray) -> MyModel:
+        cm = lambda xd, yd: Util.cut_middle(xd, yd, 0, 10)
+        return SplitModels._triple_model(x, y, np.maximum, cm, train_border=9.)
 
     @staticmethod
     def triple_model_maximum(x: np.ndarray, y: np.ndarray) -> MyModel:
@@ -81,18 +107,23 @@ class SplitModels:
         return SplitModels._triple_model(x, y, Util.mean_of_greatest, cm)
 
     @staticmethod
-    def _triple_model(x: np.ndarray, y: np.ndarray, combine: Callable, cut_middle: Callable) -> MyModel:
+    def _triple_model(x: np.ndarray, y: np.ndarray, combine: Callable,
+                      cut_middle: Callable,
+                      train_border: float = 7.94) -> MyModel:
         class M(MyModel):
             model_all: MyModel
             model_left: MyModel
             model_right: MyModel
 
             def __init__(self, x_data: np.ndarray, y_data: np.ndarray):
-                xl, xr, yl, yr = Util.split_arrays_by_value(x_data, y_data, train_border)
+                xl, xr, yl, yr = Util.split_arrays_by_value(x_data, y_data,
+                                                            train_border)
                 xm, ym = cut_middle(x_data, y_data)
                 self.model_all = Train.fit_gbm(xm, ym, Train.gbm_optimal_config)
-                self.model_left = Train.fit_gbm(xl, yl, Train.gbm_optimal_config)
-                self.model_right = Train.fit_gbm(xr, yr, Train.gbm_optimal_config)
+                self.model_left = Train.fit_gbm(xl, yl,
+                                                Train.gbm_optimal_config)
+                self.model_right = Train.fit_gbm(xr, yr,
+                                                 Train.gbm_optimal_config)
 
             def predict(self, x_test: np.ndarray) -> np.ndarray:
                 pa = self.model_all.predict(x_test)
@@ -111,7 +142,8 @@ class SplitModels:
             model: MyModel
 
             def __init__(self, x_data: np.ndarray, y_data: np.ndarray):
-                self.model = Train.fit_gbm(x_data, y_data, Train.gbm_optimal_config)
+                self.model = Train.fit_gbm(x_data, y_data,
+                                           Train.gbm_optimal_config)
 
             def predict(self, x_test: np.ndarray) -> np.ndarray:
                 return self.model.predict(x_test)
@@ -138,15 +170,20 @@ def run_hists():
     df_train = files.train_df()
     x_data = df_train[Train.x_names].values
     y_data = df_train[[Train.y_name]].values
-    xl, xr, yl, yr = Util.split_arrays_by_value(x_data, y_data, train_border)
+    xl, xr, yl, yr = Util.split_arrays_by_value(x_data, y_data,
+                                                default_train_border)
     hist(y_data, 'all', f'target values', color='r')
-    hist(yl, 'left', f'target values smaller {train_border:.2f}', color='g')
-    hist(yr, 'right', f'target values greater {train_border:.2f}', color='b')
+    hist(yl, 'left', f'target values smaller {default_train_border:.2f}',
+         color='g')
+    hist(yr, 'right', f'target values greater {default_train_border:.2f}',
+         color='b')
 
 
 def hist_predictions(x, y):
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=203842039)
-    xl, xr, yl, yr = Util.split_arrays_by_value(x_train, y_train, train_border)
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33,
+                                                        random_state=203842039)
+    xl, xr, yl, yr = Util.split_arrays_by_value(x_train, y_train,
+                                                default_train_border)
     model_all = Train.fit_gbm(x_train, y_train, Train.gbm_optimal_config)
     model_left = Train.fit_gbm(xl, yl, Train.gbm_optimal_config)
     model_right = Train.fit_gbm(xr, yr, Train.gbm_optimal_config)
@@ -156,8 +193,10 @@ def hist_predictions(x, y):
     yp_right = model_right.predict(x_test)
 
     hist(yp_all, 'pred_all', f'predicted values', color='orange')
-    hist(yp_left, 'pred_left', f'predicted values smaller {train_border:.2f}', color='orange')
-    hist(yp_right, 'pred_right', f'predicted values greater {train_border:.2f}', color='orange')
+    hist(yp_left, 'pred_left',
+         f'predicted values smaller {default_train_border:.2f}', color='orange')
+    hist(yp_right, 'pred_right',
+         f'predicted values greater {default_train_border:.2f}', color='orange')
 
 
 @dataclass
@@ -170,30 +209,55 @@ class SplitTrain:
 
 
 def process_split_train(split_train: SplitTrain) -> (str, float):
-    return split_train.desc, Train.trainit(split_train.seed, split_train.x, split_train.y, split_train.f, False)
+    return split_train.desc, Train.trainit(split_train.seed, split_train.x,
+                                           split_train.y, split_train.f, False)
 
 
 def run_train_it():
     cnt = 20
-    tid = '04'
+    tid = '05'
 
     def train_it(x_dat, y_dat):
         split_train_cfgs = {
             '01': [
-                SplitTrain("no split", 1217, x_dat, y_dat, SplitModels.no_split),
-                SplitTrain("triple max", 1983, x_dat, y_dat, SplitModels.triple_model_maximum),
+                SplitTrain("no split", 1217, x_dat, y_dat,
+                           SplitModels.no_split),
+                SplitTrain("triple max", 1983, x_dat, y_dat,
+                           SplitModels.triple_model_maximum),
             ],
             '02': [
-                SplitTrain("triple mean of g", 1283, x_dat, y_dat, SplitModels.triple_model_mean_of_greatest),
+                SplitTrain("triple mean of g", 1283, x_dat, y_dat,
+                           SplitModels.triple_model_mean_of_greatest),
             ],
             '03': [
-                SplitTrain("triple cut m", 1281113, x_dat, y_dat, SplitModels.triple_model_maximum_narrow_m),
-                SplitTrain("triple cut s", 1232823, x_dat, y_dat, SplitModels.triple_model_maximum_narrow_s),
-                SplitTrain("triple cut xs", 145453, x_dat, y_dat, SplitModels.triple_model_maximum_narrow_xs),
+                SplitTrain("triple cut m", 1281113, x_dat, y_dat,
+                           SplitModels.triple_model_maximum_narrow_m),
+                SplitTrain("triple cut s", 1232823, x_dat, y_dat,
+                           SplitModels.triple_model_maximum_narrow_s),
+                SplitTrain("triple cut xs", 145453, x_dat, y_dat,
+                           SplitModels.triple_model_maximum_narrow_xs),
             ],
             '04': [
-                SplitTrain("triple cut l", 132823, x_dat, y_dat, SplitModels.triple_model_maximum_narrow_l),
-                SplitTrain("triple cut xl", 54453, x_dat, y_dat, SplitModels.triple_model_maximum_narrow_xl),
+                SplitTrain("triple cut l", 132823, x_dat, y_dat,
+                           SplitModels.triple_model_maximum_narrow_l),
+                SplitTrain("triple cut xl", 54453, x_dat, y_dat,
+                           SplitModels.triple_model_maximum_narrow_xl),
+            ],
+            '05': [
+                SplitTrain("no split", 1217, x_dat, y_dat,
+                           SplitModels.no_split),
+                SplitTrain("border best", 823, x_dat, y_dat,
+                           SplitModels.triple_model_maximum),
+                SplitTrain("border xs", 54445, x_dat, y_dat,
+                           SplitModels.triple_model_train_border_xs),
+                SplitTrain("triple s", 544553, x_dat, y_dat,
+                           SplitModels.triple_model_train_border_s),
+                SplitTrain("triple m", 541563, x_dat, y_dat,
+                           SplitModels.triple_model_train_border_m),
+                SplitTrain("triple l", 534753, x_dat, y_dat,
+                           SplitModels.triple_model_train_border_l),
+                SplitTrain("triple xl", 54953, x_dat, y_dat,
+                           SplitModels.triple_model_train_border_xl),
             ]
         }
         split_trains = split_train_cfgs[tid]
@@ -201,7 +265,8 @@ def run_train_it():
             with multiprocessing.Pool() as pool:
                 np.random.seed(st.seed)
                 seeds = np.random.randint(0, 1000000, cnt)
-                sts = [SplitTrain(desc=st.desc, seed=s, x=st.x, y=st.y, f=st.f) for s in seeds]
+                sts = [SplitTrain(desc=st.desc, seed=s, x=st.x, y=st.y, f=st.f)
+                       for s in seeds]
                 result = {}
                 for i in pool.map(process_split_train, sts):
                     result.setdefault(i[0], []).append(i[1])
@@ -412,48 +477,48 @@ def run_boxplot():
                     0.7290644319642661,
                 ],
                 'triple cut l': [
-                  0.7091952534280209,
-                  0.7104384053116533,
-                  0.711958514491844,
-                  0.7090374421789568,
-                  0.7109989630756796,
-                  0.7099821080902462,
-                  0.7109541898677125,
-                  0.7096217398378141,
-                  0.7104492786113709,
-                  0.708727276549688,
-                  0.7097606683042734,
-                  0.7095248451346012,
-                  0.7093506118106352,
-                  0.70917151926084,
-                  0.7088937709388792,
-                  0.710070759868951,
-                  0.7095874678284344,
-                  0.7112584791286697,
-                  0.7094860968379312,
-                  0.7099695072295946,
+                    0.7091952534280209,
+                    0.7104384053116533,
+                    0.711958514491844,
+                    0.7090374421789568,
+                    0.7109989630756796,
+                    0.7099821080902462,
+                    0.7109541898677125,
+                    0.7096217398378141,
+                    0.7104492786113709,
+                    0.708727276549688,
+                    0.7097606683042734,
+                    0.7095248451346012,
+                    0.7093506118106352,
+                    0.70917151926084,
+                    0.7088937709388792,
+                    0.710070759868951,
+                    0.7095874678284344,
+                    0.7112584791286697,
+                    0.7094860968379312,
+                    0.7099695072295946,
                 ],
                 'triple cut xl': [
-                   0.7045609620915083,
-                   0.7045245747674157,
-                   0.7030445261397842,
-                   0.7042623103591629,
-                   0.7029343588955506,
-                   0.704638461317319,
-                   0.7023062628349683,
-                   0.7053937582933063,
-                   0.7044995536372146,
-                   0.7052142877498144,
-                   0.7044228359297706,
-                   0.7043450069642373,
-                   0.7020167769591862,
-                   0.7030799911428479,
-                   0.7049007853338684,
-                   0.7046828269484198,
-                   0.7028509538032434,
-                   0.7043124087042378,
-                   0.704670130443317,
-                   0.7023655404839197,
+                    0.7045609620915083,
+                    0.7045245747674157,
+                    0.7030445261397842,
+                    0.7042623103591629,
+                    0.7029343588955506,
+                    0.704638461317319,
+                    0.7023062628349683,
+                    0.7053937582933063,
+                    0.7044995536372146,
+                    0.7052142877498144,
+                    0.7044228359297706,
+                    0.7043450069642373,
+                    0.7020167769591862,
+                    0.7030799911428479,
+                    0.7049007853338684,
+                    0.7046828269484198,
+                    0.7028509538032434,
+                    0.7043124087042378,
+                    0.704670130443317,
+                    0.7023655404839197,
                 ],
             }
         ),
@@ -470,8 +535,8 @@ def run_boxplot():
 
 def main():
     # run_hists()
-    # run_train_it()
-    run_boxplot()
+    run_train_it()
+    # run_boxplot()
 
 
 if __name__ == '__main__':
