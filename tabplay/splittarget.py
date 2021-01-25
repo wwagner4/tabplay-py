@@ -51,6 +51,16 @@ class SplitModels:
         return SplitModels._triple_model(x, y, np.maximum, cm)
 
     @staticmethod
+    def triple_model_maximum_narrow_l(x: np.ndarray, y: np.ndarray) -> MyModel:
+        cm = lambda xd, yd: Util.cut_middle(xd, yd, 6.5, 9.0)
+        return SplitModels._triple_model(x, y, np.maximum, cm)
+
+    @staticmethod
+    def triple_model_maximum_narrow_xl(x: np.ndarray, y: np.ndarray) -> MyModel:
+        cm = lambda xd, yd: Util.cut_middle(xd, yd, 5.5, 9.5)
+        return SplitModels._triple_model(x, y, np.maximum, cm)
+
+    @staticmethod
     def triple_model_maximum_narrow_m(x: np.ndarray, y: np.ndarray) -> MyModel:
         cm = lambda xd, yd: Util.cut_middle(xd, yd, 7.4, 8.4)
         return SplitModels._triple_model(x, y, np.maximum, cm)
@@ -77,9 +87,7 @@ class SplitModels:
             model_left: MyModel
             model_right: MyModel
 
-
             def __init__(self, x_data: np.ndarray, y_data: np.ndarray):
-
                 xl, xr, yl, yr = Util.split_arrays_by_value(x_data, y_data, train_border)
                 xm, ym = cut_middle(x_data, y_data)
                 self.model_all = Train.fit_gbm(xm, ym, Train.gbm_optimal_config)
@@ -167,7 +175,7 @@ def process_split_train(split_train: SplitTrain) -> (str, float):
 
 def run_train_it():
     cnt = 20
-    tid = '03'
+    tid = '04'
 
     def train_it(x_dat, y_dat):
         split_train_cfgs = {
@@ -182,6 +190,10 @@ def run_train_it():
                 SplitTrain("triple cut m", 1281113, x_dat, y_dat, SplitModels.triple_model_maximum_narrow_m),
                 SplitTrain("triple cut s", 1232823, x_dat, y_dat, SplitModels.triple_model_maximum_narrow_s),
                 SplitTrain("triple cut xs", 145453, x_dat, y_dat, SplitModels.triple_model_maximum_narrow_xs),
+            ],
+            '04': [
+                SplitTrain("triple cut l", 132823, x_dat, y_dat, SplitModels.triple_model_maximum_narrow_l),
+                SplitTrain("triple cut xl", 54453, x_dat, y_dat, SplitModels.triple_model_maximum_narrow_xl),
             ]
         }
         split_trains = split_train_cfgs[tid]
@@ -213,43 +225,7 @@ def run_boxplot():
         data: dict
 
     cfgs = {
-        '01': Cfg(
-            data={
-                'no_split': [
-                    0.7039493389539233,
-                    0.7013205916708355,
-                    0.7016550741001032,
-                    0.7019636532330444,
-                    0.7013762482873541,
-                ],
-                'triple': [
-                    0.6997663848174556,
-                    0.7029153140637895,
-                    0.703757391969722,
-                    0.7019180929865728,
-                ],
-            }
-        ),
-        '02': Cfg(
-            data={
-                'no_split': [
-                    0.7040340944617459,
-                    0.7012621930207075,
-                    0.7015999076371211,
-                    0.7019887945001956,
-                    0.7013959623820328,
-                ],
-                'triple': [
-                    0.702925914913469,
-                    0.7038798217630783,
-                    0.7019596574480624,
-                    0.7025962353500002,
-                    0.7002881835337523,
-                    0.7038416475633518,
-                ],
-            }
-        ),
-        '03': Cfg(
+        'triple': Cfg(
             data={
                 'triple': [
                     0.7034574080360404,
@@ -295,7 +271,33 @@ def run_boxplot():
                     0.7028908903141194,
                     0.7038925429247523,
                 ],
-                'triple mean of g': [
+            }
+        ),
+        'mog': Cfg(
+            data={
+                'no split': [
+                    0.7009199711774573,
+                    0.7014282805510063,
+                    0.7031982159585766,
+                    0.7024588163765331,
+                    0.6999652080488968,
+                    0.7012884086845848,
+                    0.7025801527504894,
+                    0.702324032893071,
+                    0.7009962556988304,
+                    0.7010960945547321,
+                    0.7017451433588406,
+                    0.7021371837073322,
+                    0.7008733939329123,
+                    0.7025726175124827,
+                    0.7014632972039827,
+                    0.7027996873054194,
+                    0.7019968076158548,
+                    0.7032934889252749,
+                    0.7028908903141194,
+                    0.7038925429247523,
+                ],
+                'triple mean of great': [
                     0.7986880745333453,
                     0.7998060779354146,
                     0.7996435960022191,
@@ -318,9 +320,101 @@ def run_boxplot():
                     0.79826040414,
                 ]
             }
-        )
+        ),
+        'cutm': Cfg(
+            data={
+                'no split': [
+                    0.7009199711774573,
+                    0.7014282805510063,
+                    0.7031982159585766,
+                    0.7024588163765331,
+                    0.6999652080488968,
+                    0.7012884086845848,
+                    0.7025801527504894,
+                    0.702324032893071,
+                    0.7009962556988304,
+                    0.7010960945547321,
+                    0.7017451433588406,
+                    0.7021371837073322,
+                    0.7008733939329123,
+                    0.7025726175124827,
+                    0.7014632972039827,
+                    0.7027996873054194,
+                    0.7019968076158548,
+                    0.7032934889252749,
+                    0.7028908903141194,
+                    0.7038925429247523,
+                ],
+                'triple cut xs': [
+                    0.7328030908142162,
+                    0.7338235540906083,
+                    0.7341963237764203,
+                    0.733923839938995,
+                    0.7332010542057551,
+                    0.7324815669108985,
+                    0.7337413003517282,
+                    0.7351442215591371,
+                    0.7331096753788353,
+                    0.7319045088032006,
+                    0.7328750829983506,
+                    0.7329963269956343,
+                    0.7323883509953255,
+                    0.7329364701778425,
+                    0.7347750965284029,
+                    0.7326771315762366,
+                    0.7351769017143668,
+                    0.7322016004299307,
+                    0.733544450701847,
+                    0.7353707429350909,
+                ],
+                'triple cut s': [
+                    0.7341656663707038,
+                    0.7310818855164775,
+                    0.7324955209475246,
+                    0.7330198504183878,
+                    0.7327176966044778,
+                    0.7342309420412005,
+                    0.7342330791765426,
+                    0.7333652188250711,
+                    0.7351713416220367,
+                    0.7319503147669266,
+                    0.7327750941082221,
+                    0.731515534167976,
+                    0.7343650056456157,
+                    0.7357654741028172,
+                    0.7323856767265006,
+                    0.7324586685337023,
+                    0.7352860304351114,
+                    0.7338738585832775,
+                    0.7355666347865094,
+                    0.7353088546956907,
+                ],
+                'triple cut m': [
+                    0.7296870013626504,
+                    0.7327805696254299,
+                    0.7316794175658746,
+                    0.7301526429495326,
+                    0.7305282799804192,
+                    0.7310194446098214,
+                    0.729513334403088,
+                    0.7307882477422737,
+                    0.7279550393413717,
+                    0.728794434102106,
+                    0.7286725459007971,
+                    0.7294277860181257,
+                    0.7313543617163364,
+                    0.7301752228400468,
+                    0.7292749795423806,
+                    0.729487844172261,
+                    0.7276232279701352,
+                    0.729781970898164,
+                    0.7301975350838626,
+                    0.7290644319642661,
+                ]
+            }
+        ),
     }
-    pid = '03'
+    pid = 'cutm'
     cfg = cfgs[pid]
     plt.boxplot(cfg.data.values(), labels=cfg.data.keys())
     plot_dir = files.plotdir
