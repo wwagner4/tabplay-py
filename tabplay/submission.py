@@ -34,7 +34,12 @@ configs = {
     '03': SubmConfig(
         s_id='split_target_triple_01',
         s_description='Predict target by triple model',
-        f_model=SplitModels.triple_model
+        f_model=SplitModels.triple_model_maximum
+    ),
+    '04': SubmConfig(
+        s_id='split_target_triple_01',
+        s_description='Predict target by triple model. Split at 9.0',
+        f_model=SplitModels.triple_model_train_border_9_0
     ),
 
 }
