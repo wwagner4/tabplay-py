@@ -103,9 +103,7 @@ class Train:
     @staticmethod
     def fit_gbm(x: np.ndarray, y: np.ndarray, config: dict) -> Any:
         regr = GradientBoostingRegressor(**config)
-        print("---> gbm fit")
         resu = regr.fit(x, y.ravel())
-        print("<--- gbm fit")
         return resu
 
     @staticmethod

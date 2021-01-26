@@ -48,11 +48,34 @@ class SplitModels:
         return M(x, y)
 
     @staticmethod
-    def triple_model_train_border(x: np.ndarray, y: np.ndarray,
-                                  border: float) -> MyModel:
+    def triple_model_train_border_9_0(x: np.ndarray, y: np.ndarray) -> MyModel:
         cm = lambda xd, yd: Util.cut_middle(xd, yd, 0, 10)
-        return SplitModels._triple_model(x, y, np.maximum, cm,
-                                         train_border=border)
+        return SplitModels._triple_model(x, y, np.maximum, cm, train_border=9.0)
+
+    @staticmethod
+    def triple_model_train_border_8_5(x: np.ndarray, y: np.ndarray) -> MyModel:
+        cm = lambda xd, yd: Util.cut_middle(xd, yd, 0, 10)
+        return SplitModels._triple_model(x, y, np.maximum, cm, train_border=8.5)
+
+    @staticmethod
+    def triple_model_train_border_8_0(x: np.ndarray, y: np.ndarray) -> MyModel:
+        cm = lambda xd, yd: Util.cut_middle(xd, yd, 0, 10)
+        return SplitModels._triple_model(x, y, np.maximum, cm, train_border=8.0)
+
+    @staticmethod
+    def triple_model_train_border_7_5(x: np.ndarray, y: np.ndarray) -> MyModel:
+        cm = lambda xd, yd: Util.cut_middle(xd, yd, 0, 10)
+        return SplitModels._triple_model(x, y, np.maximum, cm, train_border=7.5)
+
+    @staticmethod
+    def triple_model_train_border_7_0(x: np.ndarray, y: np.ndarray) -> MyModel:
+        cm = lambda xd, yd: Util.cut_middle(xd, yd, 0, 10)
+        return SplitModels._triple_model(x, y, np.maximum, cm, train_border=7.0)
+
+    @staticmethod
+    def triple_model_train_border_6_5(x: np.ndarray, y: np.ndarray) -> MyModel:
+        cm = lambda xd, yd: Util.cut_middle(xd, yd, 0, 10)
+        return SplitModels._triple_model(x, y, np.maximum, cm, train_border=6.5)
 
     @staticmethod
     def triple_model_maximum(x: np.ndarray, y: np.ndarray) -> MyModel:
@@ -227,32 +250,33 @@ def run_train_it():
                            SplitModels.triple_model_maximum_narrow_xl),
             ],
             '05': [
-                SplitTrain("no split", 1217, x_dat, y_dat,
-                           SplitModels.no_split),
-                SplitTrain("border best", 823, x_dat, y_dat,
-                           SplitModels.triple_model_maximum),
                 SplitTrain(
-                    "border 7", 54445, x_dat, y_dat,
-                    lambda xd, yd: SplitModels.triple_model_train_border(
-                        xd, yd, 7.0)),
+                    "border 6.5", 54445, x_dat, y_dat,
+                    SplitModels.triple_model_train_border_6_5),
                 SplitTrain(
-                    "border 7.5", 54445, x_dat, y_dat,
-                    lambda xd, yd: SplitModels.triple_model_train_border(
-                        xd, yd, 7.5)),
+                    "border 7.0", 54458, x_dat, y_dat,
+                    SplitModels.triple_model_train_border_7_0),
                 SplitTrain(
-                    "border 8", 54445, x_dat, y_dat,
-                    lambda xd, yd: SplitModels.triple_model_train_border(
-                        xd, yd, 8.0)),
+                    "border 7.5", 54485, x_dat, y_dat,
+                    SplitModels.triple_model_train_border_7_5),
                 SplitTrain(
-                    "border 8.5", 54445, x_dat, y_dat,
-                    lambda xd, yd: SplitModels.triple_model_train_border(
-                        xd, yd, 8.5)),
+                    "border 8.0", 54445, x_dat, y_dat,
+                    SplitModels.triple_model_train_border_8_0),
                 SplitTrain(
-                    "border 9", 54445, x_dat, y_dat,
-                    lambda xd, yd: SplitModels.triple_model_train_border(
-                        xd, yd, 9.0)),
-            ]
+                    "border 8.5", 54412, x_dat, y_dat,
+                    SplitModels.triple_model_train_border_8_5),
+                SplitTrain(
+                    "border 9.0", 12445, x_dat, y_dat,
+                    SplitModels.triple_model_train_border_9_0),
+                SplitTrain(
+                    "border best", 823, x_dat, y_dat,
+                    SplitModels.triple_model_maximum),
+                SplitTrain(
+                    "no split", 1217, x_dat, y_dat,
+                    SplitModels.no_split),
+            ],
         }
+
         split_trains = split_train_cfgs[tid]
         for st in split_trains:
             with multiprocessing.Pool() as pool:
